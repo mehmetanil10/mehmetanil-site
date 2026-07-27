@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 92%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 92%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 92%;
+    --primary: 210 100% 60%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 222 30% 14%;
+    --secondary-foreground: 210 40% 80%;
+    --muted: 222 30% 12%;
+    --muted-foreground: 215 20% 50%;
+    --accent: 210 100% 60%;
+    --accent-foreground: 222 47% 6%;
+    --border: 222 30% 16%;
+    --input: 222 30% 14%;
+    --ring: 210 100% 60%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-background;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent;
+  }
+
+  .glow {
+    box-shadow: 0 0 40px -10px hsl(210 100% 60% / 0.3);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-border hover:bg-card/80;
+  }
+}
+
+/* ── globals.css'e ekle (mevcut içeriğin ALTINA yapıştır) ── */
+
+/* Fade-in (hero stagger için) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease forwards;
+}
+
+/* Cursor blink */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+/* ── globals.css'e ekle (mevcut içeriğin ALTINA yapıştır) ── */
+
+/* Fade-in (hero stagger için) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease forwards;
+}
+
+/* Cursor blink */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
