@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { FileText, BookOpen, Tag, Inbox } from "lucide-react";
+import { VisitorStats } from "@/components/analytics/visitor-stats";
 
 async function getStats() {
   const [totalPosts, published, drafts, categories, messages] = await Promise.all([
@@ -27,7 +28,7 @@ export default async function AdminDashboardPage() {
     <div className="p-8">
       <h1 className="text-xl font-semibold mb-8">Dashboard</h1>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
         {cards.map((card) => (
           <div
             key={card.label}
@@ -38,6 +39,7 @@ export default async function AdminDashboardPage() {
             <p className="mt-1 text-xs text-muted-foreground">{card.label}</p>
           </div>
         ))}
+        <VisitorStats variant="cards" />
       </div>
     </div>
   );

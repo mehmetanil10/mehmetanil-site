@@ -86,3 +86,22 @@ model ContactMessage {
 
   @@index([ipHash, createdAt])
 }
+
+model DailyVisitor {
+  id          String   @id @default(cuid())
+  date        String   @db.VarChar(10)
+  visitorHash String   @db.VarChar(64)
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @updatedAt
+
+  @@unique([date, visitorHash])
+  @@index([date])
+}
+
+model ActiveVisitor {
+  visitorHash String   @id @db.VarChar(64)
+  createdAt   DateTime @default(now())
+  lastSeenAt  DateTime @updatedAt
+
+  @@index([lastSeenAt])
+}
