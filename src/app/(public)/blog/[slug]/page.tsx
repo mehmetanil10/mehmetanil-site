@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/utils";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import { PostViewCount } from "@/components/analytics/post-view-count";
 
 type Props = { params: { slug: string } };
 
@@ -41,14 +42,20 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* Header */}
       <div className="mb-10">
-        {post.category && (
-          <Link
-            href={`/blog?category=${post.category.slug}`}
-            className="text-xs font-mono text-primary mb-3 block"
-          >
-            {post.category.name}
-          </Link>
-        )}
+        <div className="mb-3 flex items-center gap-3">
+          {post.category && (
+            <Link
+              href={`/blog?category=${post.category.slug}`}
+              className="text-xs font-mono text-primary"
+            >
+              {post.category.name}
+            </Link>
+          )}
+          <PostViewCount
+            slug={post.slug}
+            initialCount={post._count.views}
+          />
+        </div>
         <h1 className="text-3xl font-semibold tracking-tight leading-tight">
           {post.title}
         </h1>

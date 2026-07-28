@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Activity, Users } from "lucide-react";
+import { getVisitorId } from "@/lib/visitor-id";
 
 type Stats = { today: number; online: number };
 
@@ -9,19 +10,6 @@ type VisitorStatsProps = {
   track?: boolean;
   variant?: "footer" | "cards";
 };
-
-const VISITOR_STORAGE_KEY = "mehmetanil-visitor-id";
-
-function getVisitorId() {
-  let visitorId = window.localStorage.getItem(VISITOR_STORAGE_KEY);
-
-  if (!visitorId) {
-    visitorId = crypto.randomUUID();
-    window.localStorage.setItem(VISITOR_STORAGE_KEY, visitorId);
-  }
-
-  return visitorId;
-}
 
 export function VisitorStats({ track = false, variant = "footer" }: VisitorStatsProps) {
   const [stats, setStats] = useState<Stats>({ today: 0, online: 0 });

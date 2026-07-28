@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Eye } from "lucide-react";
 import { getPosts } from "@/actions/post-actions";
 import { deletePost } from "@/actions/post-actions";
 import { formatDate } from "@/lib/utils";
@@ -36,6 +36,9 @@ export default async function AdminPostsPage() {
               <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground hidden lg:table-cell">
                 Tarih
               </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground hidden lg:table-cell">
+                Görüntüleme
+              </th>
               <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">
                 İşlem
               </th>
@@ -45,7 +48,7 @@ export default async function AdminPostsPage() {
             {posts.length === 0 ? (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-4 py-8 text-center text-sm text-muted-foreground"
                 >
                   Henüz yazı yok.
@@ -74,6 +77,11 @@ export default async function AdminPostsPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground text-xs font-mono hidden lg:table-cell">
                     {formatDate(post.createdAt)}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground text-xs font-mono hidden lg:table-cell">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Eye size={13} /> {post._count.views}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">

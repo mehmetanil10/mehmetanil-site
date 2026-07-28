@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Clock, Tag } from "lucide-react";
+import { ArrowRight, Clock, Eye, Tag } from "lucide-react";
 import { getPosts } from "@/actions/post-actions";
 import { getCategories } from "@/actions/category-actions";
 import { formatDate } from "@/lib/utils";
@@ -133,6 +133,10 @@ export default async function BlogPage({
                       <Clock size={10} />
                       {readingTime(featured.content)} dk okuma
                     </span>
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <Eye size={11} />
+                      {featured._count.views} görüntüleme
+                    </span>
                   </div>
 
                   <h2 className="text-lg md:text-xl font-semibold tracking-tight group-hover:text-primary transition-colors">
@@ -199,6 +203,10 @@ export default async function BlogPage({
                         <span className="inline-flex items-center gap-1 text-xs text-muted-foreground ml-auto">
                           <Clock size={10} />
                           {readingTime(post.content)} dk
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <Eye size={11} />
+                          {post._count.views}
                         </span>
                       </div>
 

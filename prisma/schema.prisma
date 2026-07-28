@@ -61,8 +61,20 @@ model Post {
   categoryId     String?
   category       Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   postTags       PostTag[]
+  views          PostView[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+}
+
+model PostView {
+  id          String   @id @default(cuid())
+  postId      String
+  visitorHash String   @db.VarChar(64)
+  createdAt   DateTime @default(now())
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, visitorHash])
+  @@index([postId])
 }
 
 model PostTag {

@@ -114,6 +114,7 @@ export async function getPosts(status?: "DRAFT" | "PUBLISHED") {
       category: true,
       author: { select: { id: true, name: true } },
       postTags: { include: { tag: true } },
+      _count: { select: { views: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -126,6 +127,7 @@ export async function getPublishedPostBySlug(slug: string) {
       category: true,
       author: { select: { id: true, name: true } },
       postTags: { include: { tag: true } },
+      _count: { select: { views: true } },
     },
   });
 }
