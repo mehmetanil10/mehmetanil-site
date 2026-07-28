@@ -683,7 +683,7 @@ export function PostForm({
                   {seoTitle || title}
                 </p>
                 <p className="text-xs text-green-600/80 font-mono mt-0.5">
-                  mehmetanil.dev/blog/{slug || "yazi-slug"}
+                  mehmetanil-site.vercel.app/blog/{slug || "yazi-slug"}
                 </p>
                 {seoDesc && (
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">

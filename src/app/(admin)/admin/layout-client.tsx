@@ -33,7 +33,7 @@ function AdminSidebar() {
     <aside className="w-56 border-r border-border/50 bg-card flex flex-col">
       <div className="p-5 border-b border-border/50">
         <Link href="/" className="font-mono text-sm text-primary">
-          mehmetanil<span className="text-muted-foreground">.dev</span>
+          mehmetanil
         </Link>
         <p className="mt-0.5 text-xs text-muted-foreground">Admin</p>
       </div>

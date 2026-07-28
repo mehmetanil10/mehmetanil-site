@@ -41,7 +41,7 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <p className="font-mono text-sm text-primary">mehmetanil.dev</p>
+          <p className="font-mono text-sm text-primary">mehmetanil</p>
           <h1 className="mt-2 text-xl font-semibold">Admin Girişi</h1>
         </div>
 

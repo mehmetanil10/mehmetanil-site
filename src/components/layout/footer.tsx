@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <div>
             <p className="font-mono text-sm text-primary">
-              mehmetanil<span className="text-muted-foreground">.dev</span>
+              mehmetanil
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               Backend · SQL · Full-Stack · İzmir, Türkiye

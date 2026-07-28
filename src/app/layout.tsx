@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://mehmetanil.dev",
+    url: "https://mehmetanil-site.vercel.app",
     siteName: "Mehmet Anıl",
   },
 };
