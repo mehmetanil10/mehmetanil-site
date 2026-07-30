@@ -21,6 +21,7 @@ export const projects: Project[] = [
     featured: true,
     type: "ai",
     liveUrl: "https://vehicleguard-three.vercel.app/",
+    githubUrl: "https://github.com/mehmetanil10/vehicleguard",
   },
   {
     title: "YDSXP – YDS/YÖKDİL Study Tracker",
@@ -34,7 +35,7 @@ export const projects: Project[] = [
     featured: true,
     type: "full-stack",
     liveUrl: "https://yds-tracker.vercel.app/landing",
-    githubUrl: "",
+    githubUrl: "https://github.com/mehmetanil10/yds-tracker",
   },
   {
     title: "SQL Reporting & Database Optimization",
@@ -56,7 +57,7 @@ export const projects: Project[] = [
     stack: ["JavaScript", "Node.js", "MongoDB", "Express"],
     featured: true,
     type: "full-stack",
-    githubUrl: "",
+    githubUrl: "https://github.com/mehmetanil10/mevnProject/tree/main",
   },
   {
     title: "Social Media Web Scraping",

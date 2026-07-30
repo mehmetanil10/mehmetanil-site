@@ -64,13 +64,13 @@ export default function ProjectsPage() {
               </div>
 
               {(project.githubUrl || project.liveUrl) && (
-                <div className="mt-4 flex gap-3 pt-4 border-t border-border/50">
+                <div className="mt-4 flex flex-col items-start gap-2 pt-4 border-t border-border/50">
                   {project.githubUrl && (
                     <Link
                       href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      className="order-2 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Github size={14} /> GitHub
                     </Link>
@@ -80,9 +80,9 @@ export default function ProjectsPage() {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      className="order-1 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      <ExternalLink size={14} /> Canlı
+                      <ExternalLink size={14} /> Canlı Demo
                     </Link>
                   )}
                 </div>
