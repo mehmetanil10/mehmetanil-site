@@ -1,16 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Github, Linkedin, MapPin } from "lucide-react";
 import Link from "next/link";
 import { contactSchema, type ContactFormValues } from "@/lib/validations";
 import { submitContact } from "@/actions/contact-actions";
+import {
+  TurnstileWidget,
+  type TurnstileWidgetHandle,
+} from "@/components/contact/turnstile-widget";
+
+const TURNSTILE_ERROR =
+  "İnsan doğrulaması başarısız oldu. Lütfen tekrar deneyin.";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
   const {
     register,
@@ -21,18 +31,42 @@ export default function ContactPage() {
     resolver: zodResolver(contactSchema),
   });
 
+  const handleTurnstileVerify = useCallback((token: string | null) => {
+    setTurnstileToken(token);
+    if (token) setError("");
+  }, []);
+
+  const handleTurnstileError = useCallback(() => {
+    setTurnstileToken(null);
+    setError(TURNSTILE_ERROR);
+  }, []);
+
   const onSubmit = async (data: ContactFormValues) => {
     setError("");
-    const result = await submitContact(data);
-    if (result.success) {
-      setSubmitted(true);
-      reset();
-    } else {
-      setError(
-        typeof result.error === "string"
-          ? result.error
-          : "Form alanlarını kontrol edip tekrar deneyin.",
-      );
+
+    if (!turnstileToken) {
+      setError(TURNSTILE_ERROR);
+      return;
+    }
+
+    try {
+      const result = await submitContact(data, turnstileToken);
+
+      if (result.success) {
+        reset();
+        setSubmitted(true);
+      } else {
+        setError(
+          typeof result.error === "string"
+            ? result.error
+            : "Form alanlarını kontrol edip tekrar deneyin.",
+        );
+      }
+    } catch {
+      setError("Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+    } finally {
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     }
   };
 
@@ -46,7 +80,6 @@ export default function ContactPage() {
         </p>
 
         <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2">
-          {/* Info */}
           <div>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -59,7 +92,7 @@ export default function ContactPage() {
                   href="https://github.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors"
+                  className="transition-colors hover:text-foreground"
                 >
                   GitHub
                 </Link>
@@ -70,7 +103,7 @@ export default function ContactPage() {
                   href="https://linkedin.com/in/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-foreground transition-colors"
+                  className="transition-colors hover:text-foreground"
                 >
                   LinkedIn
                 </Link>
@@ -78,7 +111,6 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Form */}
           <div>
             {submitted ? (
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-6 text-center">
@@ -88,7 +120,7 @@ export default function ContactPage() {
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="mt-4 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="mt-4 text-xs text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Yeni mesaj gönder
                 </button>
@@ -141,17 +173,27 @@ export default function ContactPage() {
                     {...register("message")}
                     placeholder="Mesaj"
                     rows={5}
-                    className="w-full rounded-md border border-border bg-card px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
+                    className="w-full resize-none rounded-md border border-border bg-card px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                   {errors.message && (
                     <p className="mt-1 text-xs text-red-400">{errors.message.message}</p>
                   )}
                 </div>
-                {error && <p className="text-xs text-red-400">{error}</p>}
+                <TurnstileWidget
+                  ref={turnstileRef}
+                  siteKey={turnstileSiteKey}
+                  onVerify={handleTurnstileVerify}
+                  onError={handleTurnstileError}
+                />
+                {error && (
+                  <p className="text-xs text-red-400" role="alert">
+                    {error}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                  disabled={isSubmitting || !turnstileToken}
+                  className="w-full rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSubmitting ? "Gönderiliyor..." : "Gönder"}
                 </button>
