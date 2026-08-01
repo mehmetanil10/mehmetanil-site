@@ -10,6 +10,8 @@ import {
   Zap,
   Bot,
   GraduationCap,
+  PanelsTopLeft,
+  Palette,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -19,6 +21,44 @@ export const metadata: Metadata = {
 };
 
 const services = [
+  {
+    icon: PanelsTopLeft,
+    badge: "Web",
+    title: "Web Uygulama Geliştirme",
+    tagline:
+      "İşletmenize özel, kullanıcı dostu ve performanslı web uygulamaları geliştiriyorum. Tasarımdan backend altyapısına ve yayına alma sürecine kadar uçtan uca çözüm sunuyorum.",
+    accentColor: "text-cyan-400",
+    borderColor: "border-cyan-400/20",
+    bgColor: "bg-cyan-400/5",
+    items: [
+      "Web uygulamaları",
+      "Yönetim panelleri",
+      "API ve backend geliştirme",
+      "Responsive tasarım",
+      "Yayınlama ve bakım",
+    ],
+    stack: ["Next.js", "TypeScript", "Node.js", "PostgreSQL", "Tailwind CSS"],
+    cta: "Web projesi için iletişime geç",
+  },
+  {
+    icon: Palette,
+    badge: "Tasarım",
+    title: "Marka Kimliği Tasarımı",
+    tagline:
+      "Markanızın dijital dünyada tutarlı ve profesyonel görünmesini sağlayan görsel kimlik çözümleri hazırlıyorum.",
+    accentColor: "text-rose-400",
+    borderColor: "border-rose-400/20",
+    bgColor: "bg-rose-400/5",
+    items: [
+      "Logo tasarımı",
+      "Renk paleti",
+      "Tipografi",
+      "Sosyal medya şablonları",
+      "Dijital marka rehberi",
+    ],
+    stack: ["Logo", "Tipografi", "Renk Sistemi", "Sosyal Medya", "Marka Rehberi"],
+    cta: "Marka kimliği için iletişime geç",
+  },
   {
     icon: Server,
     badge: "Backend",
