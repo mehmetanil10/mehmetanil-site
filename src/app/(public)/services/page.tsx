@@ -2,22 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
+  ArrowUpRight,
   Database,
   Server,
-  TrendingUp,
-  CheckCircle2,
-  Users,
   Zap,
   Bot,
   GraduationCap,
   PanelsTopLeft,
   Palette,
+  Sparkles,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Hizmetler",
   description:
-    "SQL Server optimizasyonu, Node.js backend geliştirme ve ERP sistem desteği hizmetleri. Mehmet Anıl ile çalışın.",
+    "Web uygulama geliştirme, marka kimliği tasarımı, backend geliştirme ve SQL performans optimizasyonu hizmetleri.",
 };
 
 const services = [
@@ -27,9 +26,7 @@ const services = [
     title: "Web Uygulama Geliştirme",
     tagline:
       "İşletmenize özel, kullanıcı dostu ve performanslı web uygulamaları geliştiriyorum. Tasarımdan backend altyapısına ve yayına alma sürecine kadar uçtan uca çözüm sunuyorum.",
-    accentColor: "text-cyan-400",
-    borderColor: "border-cyan-400/20",
-    bgColor: "bg-cyan-400/5",
+    outcome: "Fikrinizi hızlı, güvenli ve ölçeklenebilir bir dijital ürüne dönüştürün.",
     items: [
       "Web uygulamaları",
       "Yönetim panelleri",
@@ -46,9 +43,7 @@ const services = [
     title: "Marka Kimliği Tasarımı",
     tagline:
       "Markanızın dijital dünyada tutarlı ve profesyonel görünmesini sağlayan görsel kimlik çözümleri hazırlıyorum.",
-    accentColor: "text-rose-400",
-    borderColor: "border-rose-400/20",
-    bgColor: "bg-rose-400/5",
+    outcome: "Markanızın tüm dijital temas noktalarında güven veren bir bütünlük oluşturun.",
     items: [
       "Logo tasarımı",
       "Renk paleti",
@@ -64,9 +59,7 @@ const services = [
     badge: "Backend",
     title: "Node.js Backend Geliştirme",
     tagline: "Mobil uygulamanız, web projeniz veya SaaS ürününüz için sıfırdan backend geliştiririm ya da mevcut sisteminizi büyütürüm.",
-    accentColor: "text-blue-400",
-    borderColor: "border-blue-400/20",
-    bgColor: "bg-blue-400/5",
+    outcome: "Ürününüzü taşıyacak güvenli, sürdürülebilir ve büyümeye hazır bir altyapı kurun.",
     items: [
       "REST API tasarımı ve geliştirilmesi (Node.js + Express)",
       "MongoDB veya PostgreSQL ile veritabanı entegrasyonu",
@@ -82,9 +75,7 @@ const services = [
     badge: "SQL",
     title: "SQL Sorgu & Performans Optimizasyonu",
     tagline: "Üretim ortamındaki yavaş sorgularınızı analiz eder, execution plan incelemesi ve index optimizasyonu ile performansı artırırım.",
-    accentColor: "text-amber-400",
-    borderColor: "border-amber-400/20",
-    bgColor: "bg-amber-400/5",
+    outcome: "Yavaş sorguları ve darboğazları gidererek daha hızlı, kararlı sistemler elde edin.",
     items: [
       "Yavaş sorguların tespiti ve yeniden yazılması",
       "Index analizi ve düzenlenmesi",
@@ -99,6 +90,29 @@ const services = [
       "Raporları yavaş çalışan işletmeler",
     ],
     cta: "SQL optimizasyonu için iletişime geç",
+  },
+];
+
+const processSteps = [
+  {
+    number: "01",
+    title: "Keşif",
+    description: "İhtiyacınızı, hedef kitlenizi ve başarı ölçütlerini birlikte netleştiririz.",
+  },
+  {
+    number: "02",
+    title: "Planlama",
+    description: "Kapsamı, teknik yaklaşımı ve teslim adımlarını şeffaf bir plana dönüştürürüz.",
+  },
+  {
+    number: "03",
+    title: "Üretim",
+    description: "Tasarım ve geliştirme sürecini düzenli geri bildirimlerle ilerletirim.",
+  },
+  {
+    number: "04",
+    title: "Teslim & Destek",
+    description: "Testleri tamamlar, yayına alır ve ihtiyaç duyulan desteği sürdürürüm.",
   },
 ];
 
@@ -138,98 +152,141 @@ const fullProfile = [
 
 export default function ServicesPage() {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-20">
-      {/* Header */}
-      <p className="mb-3 font-mono text-sm text-primary">/ hizmetler</p>
-      <h1 className="text-3xl font-semibold tracking-tight">Hizmetler</h1>
-      <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-        SQL optimizasyonundan backend geliştirmeye — gerçek sonuçlar odaklı çalışıyorum.
-      </p>
-
-      {/* Main service cards */}
-      <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {services.map((service) => (
-          <div
-            key={service.title}
-            className={`rounded-xl border ${service.borderColor} ${service.bgColor} p-7 flex flex-col`}
-          >
-            {/* Card header */}
-            <div className="flex items-start gap-4 mb-5">
-              <div className={`p-2.5 rounded-lg border ${service.borderColor} bg-background/60`}>
-                <service.icon size={20} className={service.accentColor} />
-              </div>
-              <div>
-                <span className={`text-xs font-mono ${service.accentColor}`}>
-                  {service.badge}
-                </span>
-                <h2 className="text-base font-semibold mt-0.5">{service.title}</h2>
-              </div>
-            </div>
-
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              {service.tagline}
+    <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+      {/* Editorial hero */}
+      <section className="relative overflow-hidden border-b border-border/60 pb-16 md:pb-24">
+        <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-primary/10 blur-[110px]" />
+        <div className="relative max-w-4xl">
+          <div className="mb-7 flex items-center gap-3">
+            <span className="h-px w-8 bg-[#c8a96b]" />
+            <p className="font-mono text-xs uppercase tracking-[0.24em] text-[#c8a96b]">
+              Dijital ürün & teknoloji
             </p>
+          </div>
+          <h1 className="max-w-3xl text-4xl font-semibold leading-[1.08] tracking-[-0.035em] text-foreground sm:text-5xl md:text-6xl">
+            Fikirleri çalışan, ölçeklenebilir ve etkileyici ürünlere dönüştürüyorum.
+          </h1>
+          <div className="mt-8 flex flex-col gap-7 md:flex-row md:items-end md:justify-between">
+            <p className="max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
+              Stratejiden tasarıma, geliştirmeden yayına alma sürecine kadar ihtiyaç
+              duyduğunuz dijital çözümü özenli ve sonuç odaklı bir yaklaşımla oluşturuyorum.
+            </p>
+            <Link
+              href="/contact"
+              className="group inline-flex shrink-0 items-center gap-2 text-sm font-medium text-foreground"
+            >
+              Projenizi konuşalım
+              <ArrowUpRight
+                size={16}
+                className="text-primary transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              />
+            </Link>
+          </div>
+        </div>
+      </section>
 
-            {/* What I do */}
-            <div className="mb-5">
-              <p className="text-xs font-medium text-foreground mb-3">Ne yapıyorum?</p>
-              <ul className="space-y-2">
-                {service.items.map((item) => (
-                  <li key={item} className="flex gap-2.5 text-sm text-muted-foreground">
-                    <CheckCircle2
-                      size={14}
-                      className={`${service.accentColor} mt-0.5 shrink-0`}
-                    />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      {/* Premium service rows */}
+      <section className="border-b border-border/60" aria-label="Hizmetler">
+        {services.map((service, index) => (
+          <article
+            key={service.title}
+            className="group relative border-b border-border/60 py-10 last:border-b-0 md:py-14"
+          >
+            <div className="pointer-events-none absolute inset-x-[-1.5rem] inset-y-0 bg-gradient-to-r from-primary/[0.045] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <div className="relative grid gap-8 md:grid-cols-[52px_minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-10 lg:grid-cols-[64px_minmax(220px,0.75fr)_minmax(360px,1.25fr)] lg:gap-14">
+              <span className="font-mono text-sm text-[#c8a96b]">
+                {String(index + 1).padStart(2, "0")}
+              </span>
 
-            {/* For whom (SQL card only) */}
-            {service.forWhom && (
-              <div className="mb-5">
-                <p className="text-xs font-medium text-foreground mb-3 flex items-center gap-1.5">
-                  <Users size={12} className={service.accentColor} /> Kimler için?
+              <div>
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full border border-border/80 bg-card/70 transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-[0_0_30px_-12px_rgba(59,130,246,0.75)]">
+                  <service.icon size={19} className="text-primary" />
+                </div>
+                <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+                  {service.badge}
                 </p>
-                <ul className="space-y-1.5">
-                  {service.forWhom.map((who) => (
-                    <li key={who} className="flex gap-2 text-sm text-muted-foreground">
-                      <span className={service.accentColor}>›</span>
-                      {who}
+                <h2 className="max-w-xs text-2xl font-medium leading-tight tracking-[-0.025em] md:text-3xl">
+                  {service.title}
+                </h2>
+              </div>
+
+              <div className="flex flex-col">
+                <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+                  {service.tagline}
+                </p>
+                <div className="mt-6 border-l border-[#c8a96b]/50 pl-4">
+                  <p className="text-sm leading-6 text-foreground/90">{service.outcome}</p>
+                </div>
+
+                <ul className="mt-7 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+                  {service.items.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                      <span className="h-1 w-1 shrink-0 rounded-full bg-primary" />
+                      {item}
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
 
-            {/* Stack */}
-            <div className="flex flex-wrap gap-1.5 mb-6">
-              {service.stack.map((s) => (
-                <span
-                  key={s}
-                  className="rounded-sm bg-secondary px-2 py-0.5 text-xs font-mono text-muted-foreground"
+                {service.forWhom && (
+                  <p className="mt-6 text-xs leading-6 text-muted-foreground">
+                    <span className="mr-2 font-medium uppercase tracking-wider text-foreground/80">
+                      Kimler için
+                    </span>
+                    {service.forWhom.join(" · ")}
+                  </p>
+                )}
+
+                <div className="mt-7 flex flex-wrap items-center gap-2">
+                  {service.stack.map((technology) => (
+                    <span
+                      key={technology}
+                      className="rounded-full border border-border/70 bg-card/50 px-3 py-1 font-mono text-[10px] text-muted-foreground"
+                    >
+                      {technology}
+                    </span>
+                  ))}
+                </div>
+
+                <Link
+                  href="/contact"
+                  className="mt-8 inline-flex w-fit items-center gap-2 border-b border-primary/40 pb-1 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
                 >
-                  {s}
-                </span>
-              ))}
+                  {service.cta}
+                  <ArrowRight
+                    size={14}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
+                </Link>
+              </div>
             </div>
-
-            {/* CTA */}
-            <div className="mt-auto">
-              <Link
-                href="/contact"
-                className={`inline-flex items-center gap-2 rounded-md border ${service.borderColor} px-4 py-2 text-sm font-medium ${service.accentColor} hover:bg-background/60 transition-colors`}
-              >
-                {service.cta} <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
+          </article>
         ))}
-      </div>
+      </section>
+
+      {/* Process */}
+      <section className="py-20 md:py-24">
+        <div className="mb-10 flex items-center gap-3">
+          <Sparkles size={15} className="text-[#c8a96b]" />
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#c8a96b]">
+            Çalışma süreci
+          </p>
+        </div>
+        <div className="grid border-y border-border/60 sm:grid-cols-2 lg:grid-cols-4">
+          {processSteps.map((step) => (
+            <div
+              key={step.number}
+              className="border-b border-border/60 px-0 py-7 last:border-b-0 sm:px-6 sm:first:pl-0 sm:[&:nth-child(2)]:border-l lg:border-b-0 lg:border-l lg:first:border-l-0 lg:last:pr-0"
+            >
+              <span className="font-mono text-xs text-primary">{step.number}</span>
+              <h3 className="mt-4 text-base font-medium">{step.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Full profile section */}
-      <div className="mt-16 border-t border-border/50 pt-14">
+      <section className="border-t border-border/60 pt-16 md:pt-20">
         <div className="flex items-center gap-2 mb-2">
           <Zap size={16} className="text-primary" />
           <p className="text-xs font-mono text-primary uppercase tracking-widest">Tam Profil</p>
@@ -241,11 +298,11 @@ export default function ServicesPage() {
           Sadece kod yazan biri değil, gerçek sonuçlara odaklanan biri olarak çalışıyorum.
         </p>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border/60 bg-border/60 md:grid-cols-3">
           {fullProfile.map((section) => (
             <div
               key={section.title}
-              className="rounded-lg border border-border/50 bg-card p-6 transition-colors hover:border-border"
+              className="bg-background p-6 transition-colors duration-300 hover:bg-card/80"
             >
               <div className="flex items-center gap-2.5 mb-4">
                 <section.icon size={18} className={section.color} />
@@ -262,10 +319,10 @@ export default function ServicesPage() {
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* MSc note */}
-      <div className="mt-8 rounded-lg border border-border/50 bg-card px-6 py-4 flex items-center gap-3">
+      <div className="mt-8 flex items-center gap-3 border-y border-border/50 px-1 py-5">
         <GraduationCap size={18} className="text-primary shrink-0" />
         <p className="text-sm text-muted-foreground">
           Şu an{" "}
@@ -277,16 +334,17 @@ export default function ServicesPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="mt-12 rounded-xl border border-primary/20 bg-primary/5 p-8 md:p-10 text-center">
-        <h2 className="text-xl font-semibold mb-2">
-          Veritabanınız daha hızlı çalışsın, backend&apos;iniz doğru kurulsun?
+      <div className="relative mt-16 overflow-hidden rounded-2xl border border-primary/20 bg-card/70 p-8 text-center md:p-12">
+        <div className="pointer-events-none absolute inset-x-0 -top-28 mx-auto h-56 w-96 rounded-full bg-primary/15 blur-[90px]" />
+        <h2 className="relative mb-3 text-2xl font-semibold tracking-tight md:text-3xl">
+          Bir fikriniz mi var? Birlikte hayata geçirelim.
         </h2>
-        <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto">
-          Projenizi anlat, nasıl yardımcı olabileceğimi konuşalım.
+        <p className="relative mx-auto mb-7 max-w-lg text-sm leading-6 text-muted-foreground">
+          İhtiyacınızı ve hedefinizi anlatın; projeniz için en doğru yaklaşımı birlikte belirleyelim.
         </p>
         <Link
           href="/contact"
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          className="relative inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_35px_-14px_rgba(59,130,246,0.9)]"
         >
           İletişime geç <ArrowRight size={16} />
         </Link>
