@@ -52,7 +52,65 @@ function useTypingEffect(words: string[], speed = 80, pause = 1800) {
 
 export function HeroAnimated() {
   const title = useTypingEffect(TITLES);
+  const heroRef = useRef<HTMLElement>(null);
   const blobRef = useRef<HTMLDivElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
+
+  // Pointer-following ambient light. It is intentionally disabled for touch
+  // devices and visitors who prefer reduced motion.
+  useEffect(() => {
+    const hero = heroRef.current;
+    const spotlight = spotlightRef.current;
+    const finePointer = window.matchMedia("(pointer: fine)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (!hero || !spotlight || !finePointer.matches || reducedMotion.matches) {
+      return;
+    }
+
+    const current = { x: hero.clientWidth * 0.58, y: hero.clientHeight * 0.42 };
+    const target = { ...current };
+    let currentOpacity = 0;
+    let targetOpacity = 0;
+    let frame = 0;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const rect = hero.getBoundingClientRect();
+      target.x = event.clientX - rect.left;
+      target.y = event.clientY - rect.top;
+      targetOpacity = 1;
+    };
+
+    const handlePointerEnter = () => {
+      targetOpacity = 1;
+    };
+
+    const handlePointerLeave = () => {
+      targetOpacity = 0;
+    };
+
+    const animate = () => {
+      current.x += (target.x - current.x) * 0.09;
+      current.y += (target.y - current.y) * 0.09;
+      currentOpacity += (targetOpacity - currentOpacity) * 0.08;
+
+      spotlight.style.transform = `translate3d(${current.x - 230}px, ${current.y - 230}px, 0)`;
+      spotlight.style.opacity = currentOpacity.toFixed(3);
+      frame = requestAnimationFrame(animate);
+    };
+
+    hero.addEventListener("pointermove", handlePointerMove);
+    hero.addEventListener("pointerenter", handlePointerEnter);
+    hero.addEventListener("pointerleave", handlePointerLeave);
+    frame = requestAnimationFrame(animate);
+
+    return () => {
+      hero.removeEventListener("pointermove", handlePointerMove);
+      hero.removeEventListener("pointerenter", handlePointerEnter);
+      hero.removeEventListener("pointerleave", handlePointerLeave);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   // Subtle floating animation via JS (CSS keyframes would also work)
   useEffect(() => {
@@ -72,7 +130,19 @@ export function HeroAnimated() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden py-20 md:py-28">
+    <section ref={heroRef} className="relative overflow-hidden py-20 md:py-28">
+      {/* Smooth pointer-following ambient spotlight */}
+      <div
+        ref={spotlightRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 z-0 h-[460px] w-[460px] rounded-full opacity-0 blur-2xl motion-reduce:hidden"
+        style={{
+          background:
+            "radial-gradient(circle, hsl(var(--primary) / 0.16) 0%, hsl(var(--primary) / 0.07) 35%, transparent 72%)",
+          willChange: "transform, opacity",
+        }}
+      />
+
       {/* Floating blob */}
       <div
         ref={blobRef}
