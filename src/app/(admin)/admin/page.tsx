@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { FileText, BookOpen, Tag, Inbox, Eye, Trophy } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  Eye,
+  FileText,
+  Inbox,
+  Tag,
+  Trophy,
+} from "lucide-react";
 import { VisitorStats } from "@/components/analytics/visitor-stats";
 import {
   VisitorChart,
@@ -110,29 +119,123 @@ export default async function AdminDashboardPage() {
     { label: "Yayında", value: stats.published, icon: BookOpen, color: "text-green-600 dark:text-green-400" },
     { label: "Taslak", value: stats.drafts, icon: FileText, color: "text-amber-600 dark:text-yellow-400" },
     { label: "Kategori", value: stats.categories, icon: Tag, color: "text-purple-600 dark:text-purple-400" },
-    { label: "Okunmamış mesaj", value: stats.messages, icon: Inbox, color: "text-red-600 dark:text-red-400" },
   ];
+  const todayVisitors = stats.visitorChartData.at(-1)?.count ?? 0;
 
   return (
     <div className="p-8">
-      <h1 className="mb-8 text-xl font-semibold">Dashboard</h1>
+      <div className="mb-8">
+        <h1 className="text-xl font-semibold">Dashboard</h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">
+          {stats.messages > 0
+            ? `Bugün ${todayVisitors} ziyaretçiniz ve ${stats.messages} okunmamış mesajınız var.`
+            : `Her şey yolunda. Bugün ${todayVisitors} ziyaretçi sitenizi görüntüledi.`}
+        </p>
+      </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
-        {cards.map((card) => (
-          <div
-            key={card.label}
-            className="rounded-lg border border-border/50 bg-card p-5"
-          >
-            <card.icon size={18} className={`${card.color} mb-3`} />
-            <p className="text-2xl font-semibold">{card.value}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{card.label}</p>
+      {/* Öncelikli durum alanı */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Link
+          href="/admin/messages"
+          className={`group relative overflow-hidden rounded-xl border p-6 transition-all sm:col-span-2 ${
+            stats.messages > 0
+              ? "border-primary/25 bg-primary/[0.045] hover:border-primary/45"
+              : "border-border/50 bg-card hover:border-border"
+          }`}
+        >
+          <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+          <div className="relative flex h-full flex-col justify-between gap-8">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-primary">
+                {stats.messages > 0 ? <Inbox size={19} /> : <CheckCircle2 size={19} />}
+              </div>
+              <ArrowRight
+                size={17}
+                className="text-muted-foreground transition-transform duration-300 group-hover:translate-x-1 group-hover:text-primary"
+              />
+            </div>
+            <div>
+              <p className="text-3xl font-semibold tracking-tight">{stats.messages}</p>
+              <p className="mt-1 text-sm font-medium">
+                {stats.messages > 0 ? "Okunmamış mesaj" : "Tüm mesajlar okundu"}
+              </p>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                {stats.messages > 0
+                  ? "Yeni mesajları görüntülemek için açın."
+                  : "Şu anda ilgilenmeniz gereken yeni mesaj yok."}
+              </p>
+            </div>
           </div>
-        ))}
+        </Link>
+
         <VisitorStats variant="cards" />
       </div>
 
+      {/* İkincil içerik istatistikleri */}
+      <section className="mt-6">
+        <p className="mb-3 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          İçerik özeti
+        </p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {cards.map((card) => (
+            <div
+              key={card.label}
+              className="flex items-center gap-3 rounded-lg border border-border/50 bg-card/70 p-4"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary/70">
+                <card.icon size={15} className={card.color} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-lg font-semibold leading-none">{card.value}</p>
+                <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                  {card.label}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Birincil grafik */}
+      <VisitorChart data={stats.visitorChartData} />
+
       <div className="grid min-w-0 gap-6 xl:grid-cols-2">
-        <VisitorChart data={stats.visitorChartData} />
+        <section className="mt-6 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
+          <div className="flex items-center gap-2">
+            <Trophy size={18} className="text-amber-600 dark:text-yellow-400" />
+            <h2 className="font-semibold">En çok okunan blog yazıları</h2>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Tüm zamanların benzersiz görüntüleme sıralaması
+          </p>
+
+          <div className="mt-5 divide-y divide-border/30">
+            {stats.popularPosts.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">
+                Henüz görüntülenen bir yazı yok.
+              </p>
+            ) : (
+              stats.popularPosts.map((post, index) => (
+                <Link
+                  key={post.id}
+                  href={`/blog/${post.slug}`}
+                  className="flex items-center gap-4 py-3 transition-colors hover:text-primary"
+                >
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary font-mono text-xs text-muted-foreground">
+                    {index + 1}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                    {post.title}
+                  </span>
+                  <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                    <Eye size={13} /> {post._count.views} görüntüleme
+                  </span>
+                </Link>
+              ))
+            )}
+          </div>
+        </section>
+
         <VisitorChart
           data={stats.postViewChartData}
           title="Günlük blog görüntülemeleri"
@@ -140,42 +243,6 @@ export default async function AdminDashboardPage() {
           valueLabel="görüntüleme"
         />
       </div>
-
-      <section className="mt-6 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
-        <div className="flex items-center gap-2">
-          <Trophy size={18} className="text-amber-600 dark:text-yellow-400" />
-          <h2 className="font-semibold">En çok okunan blog yazıları</h2>
-        </div>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Tüm zamanların benzersiz görüntüleme sıralaması
-        </p>
-
-        <div className="mt-5 divide-y divide-border/30">
-          {stats.popularPosts.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              Henüz görüntülenen bir yazı yok.
-            </p>
-          ) : (
-            stats.popularPosts.map((post, index) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="flex items-center gap-4 py-3 transition-colors hover:text-primary"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary font-mono text-xs text-muted-foreground">
-                  {index + 1}
-                </span>
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                  {post.title}
-                </span>
-                <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
-                  <Eye size={13} /> {post._count.views} görüntüleme
-                </span>
-              </Link>
-            ))
-          )}
-        </div>
-      </section>
     </div>
   );
 }
