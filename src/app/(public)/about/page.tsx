@@ -5,13 +5,13 @@ import { ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "Hakkımda",
   description:
-    "Backend geliştirme, SQL Server optimizasyonu ve ERP sistemleri üzerine çalışan bilgisayar mühendisi Mehmet Anıl hakkında.",
+    "Backend ve full-stack geliştirme, SQL Server optimizasyonu, kurumsal sistemler ve veri odaklı ürünler üzerine çalışan Mehmet Anıl hakkında.",
 };
 
 const techStack = [
-  "SQL Server", "T-SQL", "PostgreSQL", "Prisma",
-  "Next.js", "Node.js", "TypeScript", "React",
-  "Python", "NLP", "OpenCV", "ERP (Logo)",
+  "Node.js", "TypeScript", "Next.js", "FastAPI",
+  "SQL Server", "PostgreSQL", "MongoDB", "Prisma",
+  "Python", "XGBoost", "OpenCV", "REST API",
 ];
 
 const education = [
@@ -36,33 +36,49 @@ export default function AboutPage() {
         <p className="mb-3 font-mono text-sm text-primary">/ hakkımda</p>
         <h1 className="text-3xl font-semibold tracking-tight">Mehmet Anıl</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Bilgisayar Mühendisi · İzmir, Türkiye
+          Backend ve Full-Stack Yazılım Mühendisi
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          SQL ve Veri Sistemleri · İzmir, Türkiye
         </p>
 
         {/* Summary */}
         <div className="mt-10 space-y-4 text-sm text-muted-foreground leading-relaxed">
           <p>
-            Bilgisayar mühendisiyim. Backend geliştirme, SQL Server
-            optimizasyonu, ERP sistem desteği, raporlama ve veri odaklı
-            çözümler üzerine çalışıyorum. Kurumsal sistemlerde canlı ortam
-            bakım süreçlerinde deneyim sahibiyim.
+            Backend ve full-stack geliştirme odaklı bir bilgisayar mühendisiyim.
+            Kurumsal ERP sistemleri ve canlı üretim ortamlarında; SQL Server
+            sorguları, view&apos;lar, raporlama çözümleri, execution plan analizi,
+            sorgu optimizasyonu ve index tuning konularında uygulamalı deneyim
+            kazandım.
           </p>
           <p>
-            Aynı zamanda full-stack ve yapay zeka odaklı projeler
-            geliştiriyorum. Şu an Dokuz Eylül Üniversitesi&apos;nde tezli yüksek
-            lisans yapıyorum.
+            Yazılım geliştirme sürecinde yalnızca kod üretmeye değil; iş
+            ihtiyacını anlamaya, doğru veri modelini oluşturmaya ve
+            sürdürülebilir çözümler geliştirmeye odaklanıyorum. Node.js,
+            TypeScript, Next.js, FastAPI, PostgreSQL ve SQL Server başta olmak
+            üzere backend ve veri odaklı teknolojilerle çalışıyorum.
+          </p>
+          <p>
+            Son dönemde XGBoost tabanlı kestirimci araç bakım platformu
+            VehicleGuard ve oyunlaştırılmış dil çalışma uygulaması YDSXP gibi
+            uçtan uca ürünler geliştirdim. Şu anda Dokuz Eylül Üniversitesi&apos;nde
+            Bilgisayar Mühendisliği tezli yüksek lisans eğitimime devam ediyor;
+            backend, full-stack, SaaS ve veri odaklı ürün ekiplerinde katkı
+            sağlayabileceğim fırsatlara odaklanıyorum.
           </p>
         </div>
 
         {/* Current focus */}
         <div className="mt-10 rounded-lg border border-border/50 bg-card p-6">
-          <h2 className="mb-4 text-sm font-medium">Şu an ne yapıyorum?</h2>
+          <h2 className="mb-4 text-sm font-medium">Şu anda odaklandığım alanlar</h2>
           <ul className="space-y-2">
             {[
-              "Yazılım destek ve backend odaklı çalışıyorum",
-              "SQL performans iyileştirme yapıyorum",
-              "ERP süreçleriyle ilgileniyorum",
-              "Yüksek lisans tez çalışması yürütüyorum",
+              "Backend ve full-stack ürün geliştirme",
+              "FastAPI, Next.js ve PostgreSQL tabanlı uygulamalar",
+              "SQL sorgu ve veritabanı performans optimizasyonu",
+              "Makine öğrenmesi ve veri odaklı sistemler",
+              "Bilgisayar Mühendisliği tezli yüksek lisans eğitimi",
+              "Ürün odaklı yazılım ekiplerinde yeni fırsatlar",
             ].map((item) => (
               <li key={item} className="flex gap-2 text-sm text-muted-foreground">
                 <span className="text-primary">›</span>
