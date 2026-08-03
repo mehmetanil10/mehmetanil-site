@@ -9,10 +9,10 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const homeThemeInitializer = `
+const publicThemeInitializer = `
   (function () {
     try {
-      if (window.location.pathname !== "/") return;
+      if (window.location.pathname.startsWith("/admin")) return;
       var saved = window.localStorage.getItem("mehmetanil-home-theme");
       var theme = saved === "light" || saved === "dark"
         ? saved
@@ -52,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="tr" className="dark" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: homeThemeInitializer }} />
+        <script dangerouslySetInnerHTML={{ __html: publicThemeInitializer }} />
       </head>
       <body
         className={`${poppins.className} antialiased bg-background text-foreground min-h-screen`}

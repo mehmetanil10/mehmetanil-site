@@ -120,7 +120,7 @@ const fullProfile = [
   {
     icon: Database,
     title: "SQL Server & Veritabanı",
-    color: "text-amber-400",
+    color: "text-amber-600 dark:text-amber-400",
     items: [
       "Execution plan analizi ile sorgu optimizasyonu — yüksek trafikli production ortamlarında yanıt sürelerini önemli ölçüde kısalttım",
       "Canlı veritabanlarında index analizi, yeniden yapılandırma ve tuning",
@@ -131,7 +131,7 @@ const fullProfile = [
   {
     icon: Server,
     title: "Backend & Full-Stack",
-    color: "text-blue-400",
+    color: "text-blue-600 dark:text-blue-400",
     items: [
       "Node.js ve Express ile REST API geliştirme",
       "MongoDB ve PostgreSQL ile veritabanı tasarımı",
@@ -142,7 +142,7 @@ const fullProfile = [
   {
     icon: Bot,
     title: "AI & Python",
-    color: "text-purple-400",
+    color: "text-purple-600 dark:text-purple-400",
     items: [
       "OpenCV ve YOLOv4 ile computer vision projeleri",
       "NLP tabanlı sesli asistan geliştirme",
@@ -158,8 +158,8 @@ export default function ServicesPage() {
         <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-primary/10 blur-[110px]" />
         <div className="relative max-w-4xl">
           <div className="mb-7 flex items-center gap-3">
-            <span className="h-px w-8 bg-[#c8a96b]" />
-            <p className="font-mono text-xs uppercase tracking-[0.24em] text-[#c8a96b]">
+            <span className="h-px w-8 bg-[hsl(var(--premium))]" />
+            <p className="font-mono text-xs uppercase tracking-[0.24em] text-[hsl(var(--premium))]">
               Dijital ürün & teknoloji
             </p>
           </div>
@@ -194,7 +194,7 @@ export default function ServicesPage() {
           >
             <div className="pointer-events-none absolute inset-x-[-1.5rem] inset-y-0 bg-gradient-to-r from-primary/[0.045] via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
             <div className="relative grid gap-8 md:grid-cols-[52px_minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-10 lg:grid-cols-[64px_minmax(220px,0.75fr)_minmax(360px,1.25fr)] lg:gap-14">
-              <span className="font-mono text-sm text-[#c8a96b]">
+              <span className="font-mono text-sm text-[hsl(var(--premium))]">
                 {String(index + 1).padStart(2, "0")}
               </span>
 
@@ -214,7 +214,7 @@ export default function ServicesPage() {
                 <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
                   {service.tagline}
                 </p>
-                <div className="mt-6 border-l border-[#c8a96b]/50 pl-4">
+                <div className="mt-6 border-l border-[hsl(var(--premium)/0.5)] pl-4">
                   <p className="text-sm leading-6 text-foreground/90">{service.outcome}</p>
                 </div>
 
@@ -266,8 +266,8 @@ export default function ServicesPage() {
       {/* Process */}
       <section className="py-20 md:py-24">
         <div className="mb-10 flex items-center gap-3">
-          <Sparkles size={15} className="text-[#c8a96b]" />
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#c8a96b]">
+          <Sparkles size={15} className="text-[hsl(var(--premium))]" />
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-[hsl(var(--premium))]">
             Çalışma süreci
           </p>
         </div>

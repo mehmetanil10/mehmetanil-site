@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,28 +27,18 @@ function getPreferredTheme(): Theme {
     : "dark";
 }
 
-export function HomeThemeToggle() {
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
+export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>("dark");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!isHomePage) {
-      applyTheme("dark");
-      setMounted(false);
-      return;
-    }
-
     const preferredTheme = getPreferredTheme();
     setTheme(preferredTheme);
     applyTheme(preferredTheme);
     setMounted(true);
-  }, [isHomePage]);
 
-  if (!isHomePage) {
-    return null;
-  }
+    return () => applyTheme("dark");
+  }, []);
 
   const toggleTheme = () => {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";

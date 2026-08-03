@@ -147,7 +147,7 @@ export default function ContactPage() {
                     className="w-full rounded-md border border-border bg-card px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.name.message}</p>
                   )}
                 </div>
                 <div>
@@ -158,7 +158,7 @@ export default function ContactPage() {
                     className="w-full rounded-md border border-border bg-card px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                   {errors.email && (
-                    <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.email.message}</p>
                   )}
                 </div>
                 <div>
@@ -176,7 +176,7 @@ export default function ContactPage() {
                     className="w-full resize-none rounded-md border border-border bg-card px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
                   />
                   {errors.message && (
-                    <p className="mt-1 text-xs text-red-400">{errors.message.message}</p>
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.message.message}</p>
                   )}
                 </div>
                 <TurnstileWidget
@@ -186,7 +186,7 @@ export default function ContactPage() {
                   onError={handleTurnstileError}
                 />
                 {error && (
-                  <p className="text-xs text-red-400" role="alert">
+                  <p className="text-xs text-red-600 dark:text-red-400" role="alert">
                     {error}
                   </p>
                 )}

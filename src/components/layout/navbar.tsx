@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { HomeThemeToggle } from "@/components/layout/home-theme-toggle";
+import { ThemeToggle } from "@/components/layout/home-theme-toggle";
 
 const navLinks = [
   { href: "/", label: "Ana Sayfa" },
@@ -44,15 +44,13 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          {pathname === "/" && (
-            <div className="ml-2 border-l border-border/60 pl-3">
-              <HomeThemeToggle />
-            </div>
-          )}
+          <div className="ml-2 border-l border-border/60 pl-3">
+            <ThemeToggle />
+          </div>
         </nav>
 
         <div className="flex items-center gap-3 lg:hidden">
-          <HomeThemeToggle />
+          <ThemeToggle />
 
           {/* Mobile menu toggle */}
           <button

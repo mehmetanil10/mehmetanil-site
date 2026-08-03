@@ -7,6 +7,7 @@ import {
   useEffect,
   useImperativeHandle,
   useRef,
+  useState,
 } from "react";
 
 type TurnstileOptions = {
@@ -48,15 +49,30 @@ export const TurnstileWidget = forwardRef<
   const widgetIdRef = useRef<string | null>(null);
   const onVerifyRef = useRef(onVerify);
   const onErrorRef = useRef(onError);
+  const [theme, setTheme] = useState<"light" | "dark" | null>(null);
 
   useEffect(() => {
     onVerifyRef.current = onVerify;
     onErrorRef.current = onError;
   }, [onError, onVerify]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const syncTheme = () => {
+      setTheme(root.classList.contains("light") ? "light" : "dark");
+    };
+    const observer = new MutationObserver(syncTheme);
+
+    syncTheme();
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
   const renderWidget = useCallback(() => {
     if (
       !siteKey ||
+      !theme ||
       !containerRef.current ||
       !window.turnstile ||
       widgetIdRef.current
@@ -66,7 +82,7 @@ export const TurnstileWidget = forwardRef<
 
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: siteKey,
-      theme: "dark",
+      theme,
       action: "contact",
       callback: (token) => onVerifyRef.current(token),
       "expired-callback": () => onVerifyRef.current(null),
@@ -75,7 +91,7 @@ export const TurnstileWidget = forwardRef<
         onErrorRef.current();
       },
     });
-  }, [siteKey]);
+  }, [siteKey, theme]);
 
   useEffect(() => {
     renderWidget();
@@ -84,6 +100,7 @@ export const TurnstileWidget = forwardRef<
       if (widgetIdRef.current && window.turnstile) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
+        onVerifyRef.current(null);
       }
     };
   }, [renderWidget]);
@@ -99,7 +116,7 @@ export const TurnstileWidget = forwardRef<
 
   if (!siteKey) {
     return (
-      <p className="text-xs text-red-400" role="alert">
+      <p className="text-xs text-red-600 dark:text-red-400" role="alert">
         İnsan doğrulaması şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.
       </p>
     );
