@@ -370,7 +370,7 @@ export function PostForm({
                   </button>
                 </div>
                 {imageUrlError && (
-                  <p className="mt-2 text-xs text-red-400">{imageUrlError}</p>
+                  <p className="mt-2 text-xs text-red-600 dark:text-red-400">{imageUrlError}</p>
                 )}
                 <div className="mt-3 flex flex-col gap-2 border-t border-border/40 pt-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs text-muted-foreground">
@@ -396,7 +396,7 @@ export function PostForm({
                   </label>
                 </div>
                 {editorUploadError && (
-                  <p className="mt-2 text-xs text-red-400">
+                  <p className="mt-2 text-xs text-red-600 dark:text-red-400">
                     {editorUploadError}
                   </p>
                 )}
@@ -408,7 +408,7 @@ export function PostForm({
             {preview ? (
               <div className="min-h-[420px] rounded-md border border-border/50 bg-secondary/20 px-5 py-4 text-sm leading-relaxed overflow-auto">
                 {content ? (
-                  <div className="prose prose-invert prose-sm max-w-none prose-a:text-primary prose-img:rounded-lg prose-img:border prose-img:border-border/50 prose-pre:bg-background">
+                  <div className="prose prose-sm max-w-none dark:prose-invert prose-a:text-primary prose-img:rounded-lg prose-img:border prose-img:border-border/50 prose-pre:bg-background">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkBreaks]}
                       components={{
@@ -508,7 +508,7 @@ export function PostForm({
                     className={`flex-1 rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
                       status === s
                         ? s === "PUBLISHED"
-                          ? "border-green-500/50 bg-green-500/10 text-green-400"
+                          ? "border-green-500/50 bg-green-500/10 text-green-700 dark:text-green-400"
                           : "border-border bg-secondary text-foreground"
                         : "border-border/40 text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
@@ -595,7 +595,7 @@ export function PostForm({
               />
             </label>
             {coverUploadError && (
-              <p className="mt-2 text-xs text-red-400">{coverUploadError}</p>
+              <p className="mt-2 text-xs text-red-600 dark:text-red-400">{coverUploadError}</p>
             )}
             {/* Önizleme */}
             {coverImage && !imgError ? (
@@ -609,7 +609,7 @@ export function PostForm({
                 />
               </div>
             ) : coverImage && imgError ? (
-              <p className="mt-2 text-xs text-red-400/80">
+              <p className="mt-2 text-xs text-red-600/80 dark:text-red-400/80">
                 Görsel yüklenemedi.
               </p>
             ) : (
@@ -679,10 +679,10 @@ export function PostForm({
                 <p className="text-xs text-muted-foreground/60 mb-1.5 flex items-center gap-1">
                   <Globe size={10} /> Google önizleme
                 </p>
-                <p className="text-xs text-blue-400 font-medium line-clamp-1">
+                <p className="line-clamp-1 text-xs font-medium text-blue-700 dark:text-blue-400">
                   {seoTitle || title}
                 </p>
-                <p className="text-xs text-green-600/80 font-mono mt-0.5">
+                <p className="mt-0.5 font-mono text-xs text-green-700/80 dark:text-green-500/80">
                   mehmetanil-site.vercel.app/blog/{slug || "yazi-slug"}
                 </p>
                 {seoDesc && (

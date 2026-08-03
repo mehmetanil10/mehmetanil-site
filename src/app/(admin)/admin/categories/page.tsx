@@ -108,7 +108,7 @@ export default function AdminCategoriesPage() {
                     <>
                       <button
                         onClick={handleUpdate}
-                        className="p-1 text-green-400 hover:text-green-300 transition-colors"
+                        className="p-1 text-green-700 transition-colors hover:text-green-600 dark:text-green-400 dark:hover:text-green-300"
                       >
                         <Check size={14} />
                       </button>
@@ -129,7 +129,7 @@ export default function AdminCategoriesPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(cat.id)}
-                        className="p-1 text-muted-foreground hover:text-red-400 transition-colors"
+                        className="p-1 text-muted-foreground transition-colors hover:text-red-600 dark:hover:text-red-400"
                       >
                         <Trash2 size={14} />
                       </button>

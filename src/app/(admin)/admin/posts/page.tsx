@@ -68,8 +68,8 @@ export default async function AdminPostsPage() {
                     <span
                       className={`rounded-sm px-2 py-0.5 text-xs font-mono ${
                         post.status === "PUBLISHED"
-                          ? "bg-green-400/10 text-green-400"
-                          : "bg-yellow-400/10 text-yellow-400"
+                          ? "bg-green-500/10 text-green-700 dark:text-green-400"
+                          : "bg-amber-500/10 text-amber-700 dark:text-yellow-400"
                       }`}
                     >
                       {post.status === "PUBLISHED" ? "Yayında" : "Taslak"}

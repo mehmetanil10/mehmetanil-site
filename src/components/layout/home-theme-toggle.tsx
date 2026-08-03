@@ -33,11 +33,18 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const preferredTheme = getPreferredTheme();
+    const root = document.documentElement;
+    const syncTheme = () => {
+      setTheme(root.classList.contains("light") ? "light" : "dark");
+    };
+    const observer = new MutationObserver(syncTheme);
+
     setTheme(preferredTheme);
     applyTheme(preferredTheme);
     setMounted(true);
 
-    return () => applyTheme("dark");
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
   }, []);
 
   const toggleTheme = () => {

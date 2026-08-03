@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, FileText, Tag, LogOut, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/components/layout/home-theme-toggle";
 
 function AdminSidebar() {
   const pathname = usePathname();
@@ -68,7 +69,11 @@ function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-3 border-t border-border/50">
+      <div className="space-y-2 border-t border-border/50 p-3">
+        <div className="flex items-center justify-between rounded-md px-3 py-1.5">
+          <span className="text-xs text-muted-foreground">Tema</span>
+          <ThemeToggle />
+        </div>
         <Link
           href="/api/auth/signout"
           className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"

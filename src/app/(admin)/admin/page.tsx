@@ -106,11 +106,11 @@ export default async function AdminDashboardPage() {
   const stats = await getStats();
 
   const cards = [
-    { label: "Toplam yazı", value: stats.totalPosts, icon: FileText, color: "text-blue-400" },
-    { label: "Yayında", value: stats.published, icon: BookOpen, color: "text-green-400" },
-    { label: "Taslak", value: stats.drafts, icon: FileText, color: "text-yellow-400" },
-    { label: "Kategori", value: stats.categories, icon: Tag, color: "text-purple-400" },
-    { label: "Okunmamış mesaj", value: stats.messages, icon: Inbox, color: "text-red-400" },
+    { label: "Toplam yazı", value: stats.totalPosts, icon: FileText, color: "text-blue-600 dark:text-blue-400" },
+    { label: "Yayında", value: stats.published, icon: BookOpen, color: "text-green-600 dark:text-green-400" },
+    { label: "Taslak", value: stats.drafts, icon: FileText, color: "text-amber-600 dark:text-yellow-400" },
+    { label: "Kategori", value: stats.categories, icon: Tag, color: "text-purple-600 dark:text-purple-400" },
+    { label: "Okunmamış mesaj", value: stats.messages, icon: Inbox, color: "text-red-600 dark:text-red-400" },
   ];
 
   return (
@@ -143,7 +143,7 @@ export default async function AdminDashboardPage() {
 
       <section className="mt-6 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
         <div className="flex items-center gap-2">
-          <Trophy size={18} className="text-yellow-400" />
+          <Trophy size={18} className="text-amber-600 dark:text-yellow-400" />
           <h2 className="font-semibold">En çok okunan blog yazıları</h2>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">

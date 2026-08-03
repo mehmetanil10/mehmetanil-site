@@ -53,12 +53,12 @@ export function VisitorStats({ track = false, variant = "footer" }: VisitorStats
     return (
       <>
         <div className="rounded-lg border border-border/50 bg-card p-5">
-          <Users size={18} className="mb-3 text-cyan-400" />
+          <Users size={18} className="mb-3 text-cyan-600 dark:text-cyan-400" />
           <p className="text-2xl font-semibold">{stats.today}</p>
           <p className="mt-1 text-xs text-muted-foreground">Bugünkü ziyaretçi</p>
         </div>
         <div className="rounded-lg border border-border/50 bg-card p-5">
-          <Activity size={18} className="mb-3 text-emerald-400" />
+          <Activity size={18} className="mb-3 text-emerald-600 dark:text-emerald-400" />
           <p className="text-2xl font-semibold">{stats.online}</p>
           <p className="mt-1 text-xs text-muted-foreground">Şu an online</p>
         </div>
