@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { HomeThemeToggle } from "@/components/layout/home-theme-toggle";
 
 const navLinks = [
   { href: "/", label: "Ana Sayfa" },
@@ -28,7 +29,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -43,21 +44,31 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          {pathname === "/" && (
+            <div className="ml-2 border-l border-border/60 pl-3">
+              <HomeThemeToggle />
+            </div>
+          )}
         </nav>
 
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden text-muted-foreground hover:text-foreground"
-          onClick={() => setOpen(!open)}
-          aria-label="Menü"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        <div className="flex items-center gap-3 lg:hidden">
+          <HomeThemeToggle />
+
+          {/* Mobile menu toggle */}
+          <button
+            className="text-muted-foreground transition-colors hover:text-foreground"
+            onClick={() => setOpen(!open)}
+            aria-label="Menü"
+            aria-expanded={open}
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-border/50 bg-background px-6 py-4">
+        <div className="border-t border-border/50 bg-background px-6 py-4 lg:hidden">
           <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link

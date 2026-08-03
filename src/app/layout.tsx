@@ -9,6 +9,24 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const homeThemeInitializer = `
+  (function () {
+    try {
+      if (window.location.pathname !== "/") return;
+      var saved = window.localStorage.getItem("mehmetanil-home-theme");
+      var theme = saved === "light" || saved === "dark"
+        ? saved
+        : window.matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark";
+      var root = document.documentElement;
+      root.classList.remove("light", "dark");
+      root.classList.add(theme);
+      root.style.colorScheme = theme;
+    } catch (_) {}
+  })();
+`;
+
 export const metadata: Metadata = {
   title: {
     default: "Mehmet Anıl – Backend, SQL & Full-Stack Engineer",
@@ -32,7 +50,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr" className="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: homeThemeInitializer }} />
+      </head>
       <body
         className={`${poppins.className} antialiased bg-background text-foreground min-h-screen`}
       >
