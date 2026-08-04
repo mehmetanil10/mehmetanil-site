@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ParticleCloud } from "@/components/services/particle-cloud";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -156,7 +157,8 @@ export default function ServicesPage() {
       {/* Editorial hero */}
       <section className="relative overflow-hidden border-b border-border/60 pb-16 md:pb-24">
         <div className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full bg-primary/10 blur-[110px]" />
-        <div className="relative max-w-4xl">
+        <ParticleCloud className="absolute right-0 top-[46%] hidden h-64 w-64 -translate-y-1/2 opacity-80 lg:block xl:h-80 xl:w-80" />
+        <div className="relative z-10 max-w-4xl lg:max-w-[72%] xl:max-w-4xl">
           <div className="mb-7 flex items-center gap-3">
             <span className="h-px w-8 bg-[hsl(var(--premium))]" />
             <p className="font-mono text-xs uppercase tracking-[0.24em] text-[hsl(var(--premium))]">
