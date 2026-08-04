@@ -133,6 +133,162 @@
 .animate-blink {
   animation: blink 1s step-end infinite;
 }
+
+/* Profile halo */
+@keyframes profile-halo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes profile-halo-spin-reverse {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.profile-halo-glow,
+.profile-halo-ring,
+.profile-orbit {
+  pointer-events: none;
+  position: absolute;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+.profile-halo-glow {
+  inset: -34px;
+  z-index: 0;
+  background: conic-gradient(
+    from 40deg,
+    transparent 0deg 45deg,
+    hsl(var(--primary) / 0.42) 80deg,
+    hsl(190 95% 58% / 0.26) 125deg,
+    transparent 165deg 255deg,
+    hsl(var(--primary) / 0.3) 300deg,
+    transparent 345deg
+  );
+  filter: blur(27px);
+  opacity: 0.48;
+  animation: profile-halo-spin-reverse 24s linear infinite;
+}
+
+.profile-halo-ring {
+  inset: -15px;
+  z-index: 1;
+  padding: 2px;
+  background: conic-gradient(
+    from 10deg,
+    transparent 0deg 38deg,
+    hsl(var(--primary) / 0.92) 66deg,
+    hsl(190 95% 58% / 0.72) 105deg,
+    transparent 142deg 235deg,
+    hsl(var(--primary) / 0.72) 270deg,
+    hsl(190 95% 58% / 0.42) 300deg,
+    transparent 335deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.9;
+  animation: profile-halo-spin 15s linear infinite;
+}
+
+.profile-frame {
+  box-shadow: 0 0 60px -16px hsl(var(--primary) / 0.55);
+  transition:
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+}
+
+.profile-orbit {
+  z-index: 20;
+}
+
+.profile-orbit-primary {
+  inset: -25px;
+  animation: profile-halo-spin 11s linear infinite;
+}
+
+.profile-orbit-secondary {
+  inset: -13px;
+  animation: profile-halo-spin-reverse 17s linear infinite;
+}
+
+.profile-orbit-dot {
+  position: absolute;
+  display: block;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+}
+
+.profile-orbit-dot-primary {
+  left: 50%;
+  top: 0;
+  height: 11px;
+  width: 11px;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.9);
+}
+
+.profile-orbit-dot-secondary {
+  bottom: 7%;
+  left: 12%;
+  height: 7px;
+  width: 7px;
+  opacity: 0.72;
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.75);
+}
+
+.light .profile-halo-glow {
+  filter: blur(31px);
+  opacity: 0.24;
+}
+
+.light .profile-halo-ring {
+  opacity: 0.72;
+}
+
+.light .profile-frame {
+  box-shadow: 0 0 54px -19px hsl(var(--primary) / 0.34);
+}
+
+.light .profile-orbit-dot-primary {
+  box-shadow: 0 0 16px hsl(var(--primary) / 0.55);
+}
+
+.light .profile-orbit-dot-secondary {
+  opacity: 0.58;
+  box-shadow: 0 0 12px hsl(var(--primary) / 0.42);
+}
+
+@media (max-width: 640px) {
+  .profile-halo-glow {
+    inset: -25px;
+  }
+
+  .profile-halo-ring {
+    inset: -11px;
+  }
+
+  .profile-orbit-primary {
+    inset: -18px;
+  }
+
+  .profile-orbit-secondary {
+    inset: -9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-halo-glow,
+  .profile-halo-ring,
+  .profile-orbit {
+    animation: none;
+  }
+}
 /* ── globals.css'e ekle (mevcut içeriğin ALTINA yapıştır) ── */
 
 /* Fade-in (hero stagger için) */

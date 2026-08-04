@@ -219,21 +219,30 @@ export function HeroAnimated() {
           className="relative order-first mx-auto flex items-center justify-center opacity-0 animate-fade-in lg:order-last"
           style={{ animationDelay: "350ms", animationFillMode: "forwards" }}
         >
-          <div className="absolute h-64 w-64 rounded-full bg-primary/15 blur-3xl sm:h-72 sm:w-72 lg:h-80 lg:w-80" />
-          <div className="relative h-60 w-60 rounded-full border border-primary/40 bg-card p-1.5 shadow-[0_0_60px_-16px_hsl(var(--primary)/0.55)] sm:h-72 sm:w-72 lg:h-[340px] lg:w-[340px]">
-            <div className="relative h-full w-full overflow-hidden rounded-full border border-white/10 bg-white">
-              <Image
-                src="/profile.jpg"
-                alt="Mehmet Anıl profil fotoğrafı"
-                fill
-                priority
-                sizes="(max-width: 640px) 240px, (max-width: 1024px) 288px, 340px"
-                className="object-cover object-center"
-              />
+          <div className="relative h-60 w-60 sm:h-72 sm:w-72 lg:h-[340px] lg:w-[340px]">
+            <div aria-hidden="true" className="profile-halo-glow" />
+            <div aria-hidden="true" className="profile-halo-ring" />
+
+            <div aria-hidden="true" className="profile-orbit profile-orbit-primary">
+              <span className="profile-orbit-dot profile-orbit-dot-primary" />
+            </div>
+            <div aria-hidden="true" className="profile-orbit profile-orbit-secondary">
+              <span className="profile-orbit-dot profile-orbit-dot-secondary" />
+            </div>
+
+            <div className="profile-frame relative z-10 h-full w-full rounded-full border border-primary/40 bg-card p-1.5">
+              <div className="relative h-full w-full overflow-hidden rounded-full border border-white/10 bg-white">
+                <Image
+                  src="/profile.jpg"
+                  alt="Mehmet Anıl profil fotoğrafı"
+                  fill
+                  priority
+                  sizes="(max-width: 640px) 240px, (max-width: 1024px) 288px, 340px"
+                  className="object-cover object-center"
+                />
+              </div>
             </div>
           </div>
-          <div className="pointer-events-none absolute -right-2 top-10 h-3 w-3 rounded-full bg-primary shadow-[0_0_18px_hsl(var(--primary))]" />
-          <div className="pointer-events-none absolute -bottom-1 left-8 h-2 w-2 rounded-full bg-primary/70 shadow-[0_0_14px_hsl(var(--primary))]" />
         </div>
       </div>
     </section>
