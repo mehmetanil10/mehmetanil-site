@@ -17,24 +17,28 @@ import { AnimatedCard } from "@/components/home/animated-card";
 
 const expertiseItems = [
   {
-    icon: Database,
-    title: "SQL Optimization",
-    desc: "Execution plan analizi, index tuning, slow query optimizasyonu",
+    icon: Server,
+    discipline: "01 · SYSTEM DESIGN",
+    title: "Backend Sistemleri",
+    desc: "Güvenli REST API’ler, kimlik doğrulama süreçleri ve sürdürülebilir servis mimarileri geliştiriyorum.",
   },
   {
-    icon: Server,
-    title: "ERP & Sistem Desteği",
-    desc: "Logo ERP kurumsal destek, production veritabanı bakımı",
+    icon: Database,
+    discipline: "02 · DATA ENGINEERING",
+    title: "Veritabanı ve Performans",
+    desc: "Veri modelleme, execution plan analizi, sorgu optimizasyonu ve index tuning ile sistem performansını iyileştiriyorum.",
   },
   {
     icon: Code2,
-    title: "Full-Stack Geliştirme",
-    desc: "Next.js, Node.js, TypeScript ile uçtan uca uygulama geliştirme",
+    discipline: "03 · PRODUCT ENGINEERING",
+    title: "Full-Stack Ürün Geliştirme",
+    desc: "Kullanıcı arayüzünden backend ve veritabanına kadar uçtan uca çalışan web ürünleri geliştiriyorum.",
   },
   {
     icon: Brain,
-    title: "AI & Veri Projeleri",
-    desc: "NLP, Computer Vision, web scraping ve veri odaklı sistemler",
+    discipline: "04 · INTELLIGENT SYSTEMS",
+    title: "Yapay Zekâ ve Veri Sistemleri",
+    desc: "Tahmin modelleri, telemetri verileri, bilgisayarlı görü ve NLP tabanlı özellikleri gerçek uygulamalara entegre ediyorum.",
   },
 ];
 
@@ -55,18 +59,29 @@ export default async function HomePage() {
 
       {/* ── Expertise ── */}
       <section className="py-16 border-t border-border/50">
-        <h2 className="mb-10 text-sm font-mono text-muted-foreground uppercase tracking-widest">
-          Uzmanlık Alanları
-        </h2>
+        <div className="mb-10 max-w-2xl">
+          <h2 className="text-sm font-mono text-muted-foreground uppercase tracking-widest">
+            Mühendislik Yetkinlikleri
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            Production deneyimiyle güvenilir, sürdürülebilir ve veri odaklı
+            yazılım sistemleri geliştiriyorum.
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {expertiseItems.map((item) => (
             <AnimatedCard
               key={item.title}
-              className="rounded-lg border border-border/50 bg-card p-5 transition-colors hover:border-primary/40 hover:shadow-[0_0_18px_-4px_hsl(var(--primary)/0.15)] cursor-default"
+              className="h-full rounded-lg border border-border/50 bg-card p-5 transition-colors hover:border-primary/40 hover:shadow-[0_0_18px_-4px_hsl(var(--primary)/0.15)] cursor-default"
             >
-              <item.icon size={20} className="text-primary mb-3" />
-              <h3 className="font-medium text-sm">{item.title}</h3>
-              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <span className="font-mono text-[10px] tracking-[0.12em] text-primary">
+                  {item.discipline}
+                </span>
+                <item.icon size={19} className="shrink-0 text-primary" />
+              </div>
+              <h3 className="text-sm font-medium leading-snug">{item.title}</h3>
+              <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                 {item.desc}
               </p>
             </AnimatedCard>
