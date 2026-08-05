@@ -1,140 +1,164 @@
 import type { Metadata } from "next";
-import { Github, ExternalLink } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
+import { ProjectGallery } from "@/components/projects/project-gallery";
 import { projects } from "@/lib/data";
+import type { Project } from "@/types";
 
 export const metadata: Metadata = {
   title: "Projeler",
   description: "Mehmet Anıl'ın full-stack, SQL, AI ve veri odaklı projeleri.",
 };
 
-const typeLabels: Record<string, string> = {
+const typeLabels: Record<Project["type"], string> = {
   "full-stack": "Full-Stack",
   ai: "AI / ML",
   sql: "SQL / DB",
   scraping: "Otomasyon",
 };
 
-export default function ProjectsPage() {
-  const featured = projects.filter((p) => p.featured);
-  const others = projects.filter((p) => !p.featured);
-
+function ProjectCover({ project }: { project: Project }) {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-20">
-      <p className="mb-3 font-mono text-sm text-primary">/ projeler</p>
-      <h1 className="text-3xl font-semibold tracking-tight">Projeler</h1>
-      <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-        Full-stack uygulamalardan SQL optimizasyon çalışmalarına, AI projelerine kadar.
-      </p>
+    <div className="relative aspect-video overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.2),transparent_32%),radial-gradient(circle_at_20%_85%,hsl(var(--premium)/0.13),transparent_30%)]" />
+      <div
+        className="absolute inset-0 opacity-[0.14] dark:opacity-[0.1]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+          maskImage: "linear-gradient(to bottom right, black, transparent 78%)",
+          WebkitMaskImage: "linear-gradient(to bottom right, black, transparent 78%)",
+        }}
+      />
 
-      {/* Featured */}
-      <div className="mt-12">
-        <h2 className="mb-6 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-          Öne çıkanlar
-        </h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {featured.map((project) => (
-            <div
-              key={project.slug}
-              className="rounded-lg border border-border/50 bg-card p-6 flex flex-col transition-colors hover:border-border"
-            >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs rounded-sm bg-primary/10 text-primary px-2 py-0.5 font-mono">
-                  {typeLabels[project.type]}
-                </span>
-                <span className="text-xs font-mono text-muted-foreground">
-                  {project.year}
-                </span>
-              </div>
-
-              <h3 className="font-medium mb-2">{project.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed flex-1">
-                {project.longDescription ?? project.description}
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {project.stack.map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-sm bg-secondary px-2 py-0.5 text-xs font-mono text-muted-foreground"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-
-              {(project.githubUrl || project.liveUrl) && (
-                <div className="mt-4 flex flex-col items-start gap-2 pt-4 border-t border-border/50">
-                  {project.githubUrl && (
-                    <Link
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="order-2 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <Github size={14} /> GitHub
-                    </Link>
-                  )}
-                  {project.liveUrl && (
-                    <Link
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="order-1 flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <ExternalLink size={14} /> Canlı Demo
-                    </Link>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
+      <div className="relative flex h-full flex-col justify-between p-6 sm:p-8 md:p-10">
+        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          <span>{typeLabels[project.type]}</span>
+          <span>{project.year}</span>
         </div>
-      </div>
 
-      {/* Others */}
-      {others.length > 0 && (
-        <div className="mt-12">
-          <h2 className="mb-6 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-            Diğer projeler
-          </h2>
-          <div className="space-y-3">
-            {others.map((project) => (
-              <div
-                key={project.slug}
-                className="rounded-lg border border-border/50 bg-card px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-colors hover:border-border"
+        <div>
+          <p className="mb-3 font-mono text-xs text-primary">&gt; {project.slug}</p>
+          <h3 className="max-w-2xl text-2xl font-semibold tracking-[-0.03em] text-foreground sm:text-3xl md:text-4xl">
+            {project.title}
+          </h3>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {project.stack.slice(0, 4).map((technology) => (
+              <span
+                key={technology}
+                className="rounded-full border border-border/80 bg-background/65 px-3 py-1 font-mono text-[10px] text-muted-foreground backdrop-blur-sm"
               >
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-sm font-medium">{project.title}</h3>
-                    <span className="text-xs rounded-sm bg-secondary text-muted-foreground px-1.5 py-0.5 font-mono">
-                      {typeLabels[project.type]}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">{project.description}</p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  {project.stack.slice(0, 3).map((s) => (
-                    <span key={s} className="text-xs font-mono text-muted-foreground">
-                      {s}
-                    </span>
-                  ))}
-                  {project.githubUrl && (
-                    <Link
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <Github size={14} />
-                    </Link>
-                  )}
-                </div>
-              </div>
+                {technology}
+              </span>
             ))}
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+      <section className="max-w-3xl">
+        <p className="mb-4 font-mono text-sm text-primary">/ projeler</p>
+        <h1 className="text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
+          Ürettiğim dijital ürünler ve mühendislik çalışmaları.
+        </h1>
+        <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
+          Fikir aşamasından çalışan ürüne kadar geliştirdiğim full-stack, yapay zekâ,
+          veritabanı ve otomasyon projeleri.
+        </p>
+      </section>
+
+      <section className="mt-16 border-b border-border/60" aria-label="Projeler">
+        {projects.map((project, index) => (
+          <article key={project.slug} className="border-t border-border/60 py-12 md:py-16">
+            <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex items-start gap-4 sm:gap-6">
+                <span className="pt-1 font-mono text-xs text-[hsl(var(--premium))]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    {typeLabels[project.type]}
+                  </p>
+                  <h2 className="text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+                    {project.title}
+                  </h2>
+                </div>
+              </div>
+              <span className="pl-10 font-mono text-xs text-muted-foreground sm:pl-0">
+                {project.year}
+              </span>
+            </header>
+
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)] lg:items-start lg:gap-10">
+              {project.gallery?.length ? (
+                <ProjectGallery
+                  images={project.gallery}
+                  projectTitle={project.title}
+                  priority={index === 0}
+                />
+              ) : (
+                <ProjectCover project={project} />
+              )}
+
+              <div className="flex h-full flex-col">
+                <p className="text-sm leading-7 text-muted-foreground md:text-base">
+                  {project.longDescription ?? project.description}
+                </p>
+
+                <div className="mt-7 flex flex-wrap gap-2">
+                  {project.stack.map((technology) => (
+                    <span
+                      key={technology}
+                      className="rounded-full border border-border/70 bg-card/60 px-3 py-1 font-mono text-[10px] text-muted-foreground"
+                    >
+                      {technology}
+                    </span>
+                  ))}
+                </div>
+
+                {(project.liveUrl || project.githubUrl) && (
+                  <div className="mt-8 flex flex-wrap gap-3 border-t border-border/60 pt-6 lg:mt-auto">
+                    {project.liveUrl && (
+                      <Link
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-14px_rgba(59,130,246,0.9)]"
+                      >
+                        <ExternalLink size={14} /> Canlı Demo
+                        <ArrowUpRight
+                          size={13}
+                          className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                        />
+                      </Link>
+                    )}
+                    {project.githubUrl && (
+                      <Link
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-2 text-xs font-medium text-foreground transition-all hover:-translate-y-0.5 hover:border-primary/50"
+                      >
+                        <Github size={14} /> GitHub
+                        <ArrowUpRight
+                          size={13}
+                          className="text-primary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                        />
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
     </div>
   );
 }

@@ -25,6 +25,10 @@ export type Project = {
   githubUrl?: string;
   liveUrl?: string;
   type: "full-stack" | "ai" | "sql" | "scraping";
+  gallery?: {
+    src: string;
+    alt: string;
+  }[];
 };
 
 export type Experience = {

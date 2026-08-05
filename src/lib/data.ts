@@ -22,6 +22,24 @@ export const projects: Project[] = [
     type: "ai",
     liveUrl: "https://vehicleguard-three.vercel.app/",
     githubUrl: "https://github.com/mehmetanil10/vehicleguard",
+    gallery: [
+      {
+        src: "/images/projects/vehicleguard/landing.png",
+        alt: "VehicleGuard Türkçe açılış sayfası",
+      },
+      {
+        src: "/images/projects/vehicleguard/landing-en.png",
+        alt: "VehicleGuard İngilizce açılış sayfası",
+      },
+      {
+        src: "/images/projects/vehicleguard/dashboard.png",
+        alt: "VehicleGuard filo sağlık paneli",
+      },
+      {
+        src: "/images/projects/vehicleguard/vehicle-detail.png",
+        alt: "VehicleGuard araç detay ve tahmin ekranı",
+      },
+    ],
   },
   {
     title: "YDSXP – YDS/YÖKDİL Study Tracker",
@@ -36,6 +54,20 @@ export const projects: Project[] = [
     type: "full-stack",
     liveUrl: "https://yds-tracker.vercel.app/landing",
     githubUrl: "https://github.com/mehmetanil10/yds-tracker",
+    gallery: [
+      {
+        src: "/images/projects/ydsxp/overview.jpg",
+        alt: "YDSXP özelliklerini gösteren ürün tanıtım görseli",
+      },
+      {
+        src: "/images/projects/ydsxp/landing.jpg",
+        alt: "YDSXP açılış sayfası",
+      },
+      {
+        src: "/images/projects/ydsxp/dashboard.jpg",
+        alt: "YDSXP çalışma ve ilerleme paneli",
+      },
+    ],
   },
   {
     title: "SQL Reporting & Database Optimization",
