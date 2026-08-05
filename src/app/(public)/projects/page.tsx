@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
 import { ProjectGallery } from "@/components/projects/project-gallery";
+import { ProjectNetwork } from "@/components/projects/project-network";
 import { projects } from "@/lib/data";
 import type { Project } from "@/types";
 
@@ -62,15 +63,18 @@ function ProjectCover({ project }: { project: Project }) {
 export default function ProjectsPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-      <section className="max-w-3xl">
-        <p className="mb-4 font-mono text-sm text-primary">/ projeler</p>
-        <h1 className="text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
-          Ürettiğim dijital ürünler ve mühendislik çalışmaları.
-        </h1>
-        <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
-          Fikir aşamasından çalışan ürüne kadar geliştirdiğim full-stack, yapay zekâ,
-          veritabanı ve otomasyon projeleri.
-        </p>
+      <section className="relative overflow-hidden lg:min-h-[300px]">
+        <ProjectNetwork className="absolute right-0 top-1/2 hidden h-[300px] w-[390px] -translate-y-1/2 lg:block xl:w-[430px]" />
+        <div className="relative z-10 max-w-3xl lg:max-w-[62%]">
+          <p className="mb-4 font-mono text-sm text-primary">/ projeler</p>
+          <h1 className="text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
+            Ürettiğim dijital ürünler ve mühendislik çalışmaları.
+          </h1>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
+            Fikir aşamasından çalışan ürüne kadar geliştirdiğim full-stack, yapay zekâ,
+            veritabanı ve otomasyon projeleri.
+          </p>
+        </div>
       </section>
 
       <section className="mt-16 border-b border-border/60" aria-label="Projeler">
