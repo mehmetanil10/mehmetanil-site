@@ -5,7 +5,6 @@ import {
   Server,
   Code2,
   Brain,
-  ExternalLink,
 } from "lucide-react";
 import { projects, experiences } from "@/lib/data";
 import { getPosts } from "@/actions/post-actions";
@@ -14,6 +13,7 @@ export const dynamic = "force-dynamic";
 import { formatDate } from "@/lib/utils";
 import { HeroAnimated } from "@/components/home/hero-animated";
 import { AnimatedCard } from "@/components/home/animated-card";
+import { SelectedProducts } from "@/components/home/selected-products";
 
 const expertiseItems = [
   {
@@ -49,7 +49,9 @@ export default async function HomePage() {
     latestPosts = latestPosts.slice(0, 3);
   } catch {}
 
-  const featuredProjects = projects.filter((p) => p.featured).slice(0, 4);
+  const selectedProjects = projects.filter(
+    (project) => project.slug === "vehicleguard" || project.slug === "ydsxp",
+  );
   const featuredExperiences = experiences.slice(0, 3);
 
   return (
@@ -148,11 +150,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Featured Projects ── */}
+      {/* ── Selected Products ── */}
       <section className="py-16 border-t border-border/50">
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-sm font-mono text-muted-foreground uppercase tracking-widest">
-            Öne Çıkan Projeler
+            Seçili Ürünler
           </h2>
           <Link
             href="/projects"
@@ -161,44 +163,7 @@ export default async function HomePage() {
             Tümünü gör <ArrowRight size={12} />
           </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {featuredProjects.map((project) => (
-            <AnimatedCard
-              key={project.slug}
-              className="rounded-lg border border-border/50 bg-card p-5 transition-colors hover:border-primary/40 hover:shadow-[0_0_18px_-4px_hsl(var(--primary)/0.15)] cursor-default"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="font-medium text-sm">{project.title}</h3>
-                <span className="text-xs font-mono text-muted-foreground ml-2 shrink-0">
-                  {project.year}
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                {project.description}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {project.stack.slice(0, 4).map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-sm bg-secondary px-2 py-0.5 text-xs font-mono text-muted-foreground"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-              {project.liveUrl && (
-                <Link
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs text-primary transition-colors hover:text-primary/80"
-                >
-                  Canlı demo <ExternalLink size={12} />
-                </Link>
-              )}
-            </AnimatedCard>
-          ))}
-        </div>
+        <SelectedProducts projects={selectedProjects} />
       </section>
 
       {/* ── Latest Blog Posts ── */}

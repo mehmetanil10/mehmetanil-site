@@ -79,7 +79,11 @@ export default function ProjectsPage() {
 
       <section className="mt-16 border-b border-border/60" aria-label="Projeler">
         {projects.map((project, index) => (
-          <article key={project.slug} className="border-t border-border/60 py-12 md:py-16">
+          <article
+            key={project.slug}
+            id={project.slug}
+            className="scroll-mt-24 border-t border-border/60 py-12 md:py-16"
+          >
             <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div className="flex items-start gap-4 sm:gap-6">
                 <span className="pt-1 font-mono text-xs text-[hsl(var(--premium))]">
