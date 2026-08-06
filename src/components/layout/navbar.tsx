@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { ArrowUpRight, FileText, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/layout/home-theme-toggle";
+import { CvMenu, cvLinks } from "@/components/layout/cv-menu";
 
 const navLinks = [
   { href: "/", label: "Ana Sayfa" },
@@ -44,7 +45,14 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="ml-2 border-l border-border/60 pl-3">
+          <div className="ml-2 flex items-center gap-2 border-l border-border/60 pl-3">
+            <CvMenu />
+            <Link
+              href="/contact"
+              className="hidden items-center gap-1.5 rounded-full bg-primary px-3.5 py-2 text-xs font-medium text-primary-foreground transition-all hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-14px_hsl(var(--primary))] xl:inline-flex"
+            >
+              Birlikte Çalışalım <ArrowUpRight size={13} />
+            </Link>
             <ThemeToggle />
           </div>
         </nav>
@@ -83,6 +91,34 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+
+            <div className="mt-3 border-t border-border/60 pt-3">
+              <p className="mb-2 px-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                CV / Resume
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {cvLinks.map((link) => (
+                  <a
+                    key={link.language}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-md border border-border/70 bg-card px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                  >
+                    <FileText size={13} className="text-primary" />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+              <Link
+                href="/contact"
+                onClick={() => setOpen(false)}
+                className="mt-3 flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2.5 text-xs font-medium text-primary-foreground"
+              >
+                Birlikte Çalışalım <ArrowUpRight size={13} />
+              </Link>
+            </div>
           </nav>
         </div>
       )}
