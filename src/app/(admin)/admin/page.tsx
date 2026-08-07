@@ -15,9 +15,19 @@ import {
   VisitorChart,
   type DailyVisitorPoint,
 } from "@/components/analytics/visitor-chart";
+import {
+  CvViewChart,
+  type DailyCvViewPoint,
+} from "@/components/analytics/cv-view-chart";
 
 type DailyCountRow = {
   date: string;
+  count: number;
+};
+
+type DailyCvCountRow = {
+  date: string;
+  language: string;
   count: number;
 };
 
@@ -52,6 +62,37 @@ function fillDailySeries(rows: DailyCountRow[]): DailyVisitorPoint[] {
   return result;
 }
 
+function fillDailyCvSeries(rows: DailyCvCountRow[]): DailyCvViewPoint[] {
+  const counts = new Map<string, { tr: number; en: number }>();
+
+  for (const row of rows) {
+    const current = counts.get(row.date) ?? { tr: 0, en: 0 };
+    if (row.language === "TR") current.tr += Number(row.count);
+    if (row.language === "EN") current.en += Number(row.count);
+    counts.set(row.date, current);
+  }
+
+  const defaultStart = dateInIstanbul(29);
+  const firstRecordedDate = rows[0]?.date;
+  const startDate =
+    firstRecordedDate && firstRecordedDate < defaultStart
+      ? firstRecordedDate
+      : defaultStart;
+  const endDate = dateInIstanbul();
+  const cursor = new Date(`${startDate}T12:00:00Z`);
+  const end = new Date(`${endDate}T12:00:00Z`);
+  const result: DailyCvViewPoint[] = [];
+
+  while (cursor <= end) {
+    const date = cursor.toISOString().slice(0, 10);
+    const day = counts.get(date) ?? { tr: 0, en: 0 };
+    result.push({ date, tr: day.tr, en: day.en });
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  return result;
+}
+
 async function getStats() {
   const [
     totalPosts,
@@ -61,6 +102,7 @@ async function getStats() {
     messages,
     dailyVisitors,
     dailyPostViews,
+    dailyCvViews,
     popularPosts,
   ] = await Promise.all([
     prisma.post.count(),
@@ -81,6 +123,11 @@ async function getStats() {
       GROUP BY 1
       ORDER BY 1 ASC
     `,
+    prisma.cvView.groupBy({
+      by: ["date", "language"],
+      _count: { _all: true },
+      orderBy: { date: "asc" },
+    }),
     prisma.post.findMany({
       where: { status: "PUBLISHED" },
       select: {
@@ -93,6 +140,20 @@ async function getStats() {
       take: 5,
     }),
   ]);
+
+  const cvViewRows = dailyCvViews.map((item) => ({
+    date: item.date,
+    language: item.language,
+    count: item._count._all,
+  }));
+  const cvViewChartData = fillDailyCvSeries(cvViewRows);
+  const totalTr = cvViewRows
+    .filter((item) => item.language === "TR")
+    .reduce((sum, item) => sum + item.count, 0);
+  const totalEn = cvViewRows
+    .filter((item) => item.language === "EN")
+    .reduce((sum, item) => sum + item.count, 0);
+  const todayCv = cvViewChartData.at(-1);
 
   return {
     totalPosts,
@@ -107,6 +168,13 @@ async function getStats() {
       })),
     ),
     postViewChartData: fillDailySeries(dailyPostViews),
+    cvViewChartData,
+    cvViews: {
+      today: (todayCv?.tr ?? 0) + (todayCv?.en ?? 0),
+      total: totalTr + totalEn,
+      totalTr,
+      totalEn,
+    },
     popularPosts,
   };
 }
@@ -198,6 +266,14 @@ export default async function AdminDashboardPage() {
 
       {/* Birincil grafik */}
       <VisitorChart data={stats.visitorChartData} />
+
+      <CvViewChart
+        data={stats.cvViewChartData}
+        today={stats.cvViews.today}
+        total={stats.cvViews.total}
+        totalTr={stats.cvViews.totalTr}
+        totalEn={stats.cvViews.totalEn}
+      />
 
       <div className="grid min-w-0 gap-6 xl:grid-cols-2">
         <section className="mt-6 rounded-xl border border-border/50 bg-card p-5 sm:p-6">

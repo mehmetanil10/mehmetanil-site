@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 
 const cvLinks = [
   {
-    href: "/cv/Mehmet_Anil_CV_TR.pdf",
+    href: "/resume/tr",
     label: "Türkçe CV",
     language: "TR",
   },
   {
-    href: "/cv/Mehmet_Anil_CV_EN.pdf",
+    href: "/resume/en",
     label: "English CV",
     language: "EN",
   },

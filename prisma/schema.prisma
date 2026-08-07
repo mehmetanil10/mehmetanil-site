@@ -117,3 +117,15 @@ model ActiveVisitor {
 
   @@index([lastSeenAt])
 }
+
+model CvView {
+  id          String   @id @default(cuid())
+  date        String   @db.VarChar(10)
+  language    String   @db.VarChar(2)
+  visitorHash String   @db.VarChar(64)
+  createdAt   DateTime @default(now())
+
+  @@unique([date, language, visitorHash])
+  @@index([date])
+  @@index([language])
+}
