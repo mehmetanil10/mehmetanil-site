@@ -113,12 +113,18 @@ export async function POST(request: Request) {
         update: { lastSeenAt: now },
       });
 
-      if (path) {
-        await transaction.pageView.create({
+    });
+
+    if (path) {
+      try {
+        await prisma.pageView.create({
           data: { date, path, source, visitorHash, createdAt: now },
         });
+      } catch (error) {
+        // Sayfa analitiği geçici olarak yazılamasa da ana ziyaretçi sayacı çalışmalı.
+        console.error("Page view analytics write failed:", error);
       }
-    });
+    }
 
     const stats = await getStats();
     return NextResponse.json(stats, {

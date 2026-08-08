@@ -147,10 +147,7 @@ async function getStats() {
     dailyVisitors,
     dailyPostViews,
     dailyCvViews,
-    dailyPageMetrics,
-    dailySourceMetrics,
-    postTitles,
-    popularPosts,
+    postsWithViews,
   ] = await Promise.all([
     prisma.post.count(),
     prisma.post.count({ where: { status: "PUBLISHED" } }),
@@ -175,29 +172,6 @@ async function getStats() {
       _count: { _all: true },
       orderBy: { date: "asc" },
     }),
-    prisma.$queryRaw<DailyPageMetricRow[]>`
-      SELECT
-        "date",
-        "path",
-        COUNT(*)::int AS views,
-        COUNT(DISTINCT "visitorHash")::int AS visitors
-      FROM "PageView"
-      GROUP BY "date", "path"
-      ORDER BY "date" ASC, views DESC
-    `,
-    prisma.$queryRaw<DailySourceMetricRow[]>`
-      SELECT
-        "date",
-        "source",
-        COUNT(DISTINCT "visitorHash")::int AS visitors
-      FROM "PageView"
-      GROUP BY "date", "source"
-      ORDER BY "date" ASC, visitors DESC
-    `,
-    prisma.post.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, title: true },
-    }),
     prisma.post.findMany({
       where: { status: "PUBLISHED" },
       select: {
@@ -207,9 +181,37 @@ async function getStats() {
         _count: { select: { views: true } },
       },
       orderBy: { views: { _count: "desc" } },
-      take: 5,
     }),
   ]);
+
+  let dailyPageMetrics: DailyPageMetricRow[] = [];
+  let dailySourceMetrics: DailySourceMetricRow[] = [];
+
+  try {
+    [dailyPageMetrics, dailySourceMetrics] = await Promise.all([
+      prisma.$queryRaw<DailyPageMetricRow[]>`
+        SELECT
+          "date",
+          "path",
+          COUNT(*)::int AS views,
+          COUNT(DISTINCT "visitorHash")::int AS visitors
+        FROM "PageView"
+        GROUP BY "date", "path"
+        ORDER BY "date" ASC, views DESC
+      `,
+      prisma.$queryRaw<DailySourceMetricRow[]>`
+        SELECT
+          "date",
+          "source",
+          COUNT(DISTINCT "visitorHash")::int AS visitors
+        FROM "PageView"
+        GROUP BY "date", "source"
+        ORDER BY "date" ASC, visitors DESC
+      `,
+    ]);
+  } catch (error) {
+    console.error("Page analytics dashboard query failed:", error);
+  }
 
   const cvViewRows = dailyCvViews.map((item) => ({
     date: item.date,
@@ -227,7 +229,7 @@ async function getStats() {
   const pageData: DailyPageMetric[] = dailyPageMetrics.map((item) => ({
     date: item.date,
     path: item.path,
-    label: getPageLabel(item.path, postTitles),
+    label: getPageLabel(item.path, postsWithViews),
     views: Number(item.views),
     visitors: Number(item.visitors),
   }));
@@ -259,7 +261,7 @@ async function getStats() {
     },
     pageData,
     sourceData,
-    popularPosts,
+    popularPosts: postsWithViews.slice(0, 5),
   };
 }
 
