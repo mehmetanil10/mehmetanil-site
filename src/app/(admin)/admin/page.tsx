@@ -19,6 +19,11 @@ import {
   CvViewChart,
   type DailyCvViewPoint,
 } from "@/components/analytics/cv-view-chart";
+import {
+  PageAnalytics,
+  type DailyPageMetric,
+  type DailySourceMetric,
+} from "@/components/analytics/page-analytics";
 
 type DailyCountRow = {
   date: string;
@@ -30,6 +35,45 @@ type DailyCvCountRow = {
   language: string;
   count: number;
 };
+
+type DailyPageMetricRow = {
+  date: string;
+  path: string;
+  views: number;
+  visitors: number;
+};
+
+type DailySourceMetricRow = {
+  date: string;
+  source: string;
+  visitors: number;
+};
+
+const pageLabels: Record<string, string> = {
+  "/": "Ana Sayfa",
+  "/about": "Hakkımda",
+  "/experience": "Deneyim",
+  "/projects": "Projeler",
+  "/services": "Hizmetler",
+  "/blog": "Blog",
+  "/contact": "İletişim",
+};
+
+function getPageLabel(
+  path: string,
+  posts: Array<{ slug: string; title: string }>,
+) {
+  if (pageLabels[path]) return pageLabels[path];
+  if (path.startsWith("/blog/")) {
+    const slug = path.slice("/blog/".length);
+    return posts.find((post) => post.slug === slug)?.title ?? "Blog yazısı";
+  }
+  return path
+    .split("/")
+    .filter(Boolean)
+    .at(-1)
+    ?.replace(/[-_]/g, " ") ?? "Bilinmeyen sayfa";
+}
 
 function dateInIstanbul(daysAgo = 0) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -103,6 +147,9 @@ async function getStats() {
     dailyVisitors,
     dailyPostViews,
     dailyCvViews,
+    dailyPageMetrics,
+    dailySourceMetrics,
+    postTitles,
     popularPosts,
   ] = await Promise.all([
     prisma.post.count(),
@@ -127,6 +174,29 @@ async function getStats() {
       by: ["date", "language"],
       _count: { _all: true },
       orderBy: { date: "asc" },
+    }),
+    prisma.$queryRaw<DailyPageMetricRow[]>`
+      SELECT
+        "date",
+        "path",
+        COUNT(*)::int AS views,
+        COUNT(DISTINCT "visitorHash")::int AS visitors
+      FROM "PageView"
+      GROUP BY "date", "path"
+      ORDER BY "date" ASC, views DESC
+    `,
+    prisma.$queryRaw<DailySourceMetricRow[]>`
+      SELECT
+        "date",
+        "source",
+        COUNT(DISTINCT "visitorHash")::int AS visitors
+      FROM "PageView"
+      GROUP BY "date", "source"
+      ORDER BY "date" ASC, visitors DESC
+    `,
+    prisma.post.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, title: true },
     }),
     prisma.post.findMany({
       where: { status: "PUBLISHED" },
@@ -154,6 +224,18 @@ async function getStats() {
     .filter((item) => item.language === "EN")
     .reduce((sum, item) => sum + item.count, 0);
   const todayCv = cvViewChartData.at(-1);
+  const pageData: DailyPageMetric[] = dailyPageMetrics.map((item) => ({
+    date: item.date,
+    path: item.path,
+    label: getPageLabel(item.path, postTitles),
+    views: Number(item.views),
+    visitors: Number(item.visitors),
+  }));
+  const sourceData: DailySourceMetric[] = dailySourceMetrics.map((item) => ({
+    date: item.date,
+    source: item.source,
+    visitors: Number(item.visitors),
+  }));
 
   return {
     totalPosts,
@@ -175,6 +257,8 @@ async function getStats() {
       totalTr,
       totalEn,
     },
+    pageData,
+    sourceData,
     popularPosts,
   };
 }
@@ -266,6 +350,12 @@ export default async function AdminDashboardPage() {
 
       {/* Birincil grafik */}
       <VisitorChart data={stats.visitorChartData} />
+
+      <PageAnalytics
+        pageData={stats.pageData}
+        sourceData={stats.sourceData}
+        today={dateInIstanbul()}
+      />
 
       <CvViewChart
         data={stats.cvViewChartData}

@@ -118,6 +118,21 @@ model ActiveVisitor {
   @@index([lastSeenAt])
 }
 
+model PageView {
+  id          String   @id @default(cuid())
+  date        String   @db.VarChar(10)
+  path        String   @db.VarChar(300)
+  source      String   @db.VarChar(80)
+  visitorHash String   @db.VarChar(64)
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+  @@index([path])
+  @@index([source])
+  @@index([date, path])
+  @@index([date, source])
+}
+
 model CvView {
   id          String   @id @default(cuid())
   date        String   @db.VarChar(10)
