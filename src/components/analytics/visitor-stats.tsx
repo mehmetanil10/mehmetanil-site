@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Activity, ArrowDownRight, ArrowUpRight, Minus, Users } from "lucide-react";
+import {
+  Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  Clock3,
+  Minus,
+  Users,
+} from "lucide-react";
 import { getVisitorId } from "@/lib/visitor-id";
 
 type Stats = {
@@ -15,6 +22,7 @@ type Stats = {
 type VisitorStatsProps = {
   track?: boolean;
   variant?: "footer" | "cards";
+  lastVisit?: { when: string; page: string } | null;
 };
 
 const SOURCE_STORAGE_KEY = "mehmetanil-traffic-source";
@@ -73,7 +81,11 @@ function comparisonText(today: number, yesterday: number) {
   };
 }
 
-export function VisitorStats({ track = false, variant = "footer" }: VisitorStatsProps) {
+export function VisitorStats({
+  track = false,
+  variant = "footer",
+  lastVisit = null,
+}: VisitorStatsProps) {
   const pathname = usePathname();
   const trackedPath = useRef<string | null>(null);
   const [stats, setStats] = useState<Stats>({
@@ -163,6 +175,17 @@ export function VisitorStats({ track = false, variant = "footer" }: VisitorStats
           <p className="mt-1.5 text-xs text-muted-foreground">
             Dün {stats.yesterday} · 7 günlük ort. {stats.sevenDayAverage.toFixed(1)}
           </p>
+          {lastVisit ? (
+            <p
+              className="mt-2 flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground"
+              title={`${lastVisit.when} · ${lastVisit.page}`}
+            >
+              <Clock3 size={12} className="shrink-0 text-primary" />
+              <span className="shrink-0">Son ziyaret: {lastVisit.when}</span>
+              <span aria-hidden="true">·</span>
+              <span className="truncate font-medium text-foreground">{lastVisit.page}</span>
+            </p>
+          ) : null}
         </div>
         <div className="rounded-xl border border-border/50 bg-card p-6">
           <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">

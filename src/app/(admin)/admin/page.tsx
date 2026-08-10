@@ -84,6 +84,31 @@ function dateInIstanbul(daysAgo = 0) {
   }).format(new Date(Date.now() - daysAgo * 86_400_000));
 }
 
+function formatLastVisit(date: Date) {
+  const visitDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+  const time = new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+
+  if (visitDate === dateInIstanbul()) return `Bugün ${time}`;
+  if (visitDate === dateInIstanbul(1)) return `Dün ${time}`;
+
+  return new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
 function fillDailySeries(rows: DailyCountRow[]): DailyVisitorPoint[] {
   const counts = new Map(rows.map((item) => [item.date, Number(item.count)]));
   const defaultStart = dateInIstanbul(29);
@@ -186,9 +211,10 @@ async function getStats() {
 
   let dailyPageMetrics: DailyPageMetricRow[] = [];
   let dailySourceMetrics: DailySourceMetricRow[] = [];
+  let lastPageView: { path: string; createdAt: Date } | null = null;
 
   try {
-    [dailyPageMetrics, dailySourceMetrics] = await Promise.all([
+    [dailyPageMetrics, dailySourceMetrics, lastPageView] = await Promise.all([
       prisma.$queryRaw<DailyPageMetricRow[]>`
         SELECT
           "date",
@@ -208,6 +234,10 @@ async function getStats() {
         GROUP BY "date", "source"
         ORDER BY "date" ASC, visitors DESC
       `,
+      prisma.pageView.findFirst({
+        orderBy: { createdAt: "desc" },
+        select: { path: true, createdAt: true },
+      }),
     ]);
   } catch (error) {
     console.error("Page analytics dashboard query failed:", error);
@@ -261,6 +291,12 @@ async function getStats() {
     },
     pageData,
     sourceData,
+    lastVisit: lastPageView
+      ? {
+          when: formatLastVisit(lastPageView.createdAt),
+          page: getPageLabel(lastPageView.path, postsWithViews),
+        }
+      : null,
     popularPosts: postsWithViews.slice(0, 5),
   };
 }
@@ -322,7 +358,7 @@ export default async function AdminDashboardPage() {
           </div>
         </Link>
 
-        <VisitorStats variant="cards" />
+        <VisitorStats variant="cards" lastVisit={stats.lastVisit} />
       </div>
 
       {/* İkincil içerik istatistikleri */}
