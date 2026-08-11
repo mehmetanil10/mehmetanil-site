@@ -11,18 +11,24 @@ const poppins = Poppins({
 
 const themeInitializer = `
   (function () {
+    var mode = "auto";
+
     try {
       var saved = window.localStorage.getItem("mehmetanil-home-theme");
-      var theme = saved === "light" || saved === "dark"
-        ? saved
-        : window.matchMedia("(prefers-color-scheme: light)").matches
-          ? "light"
-          : "dark";
-      var root = document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(theme);
-      root.style.colorScheme = theme;
+      if (saved === "auto" || saved === "light" || saved === "dark") {
+        mode = saved;
+      }
     } catch (_) {}
+
+    var hour = new Date().getHours();
+    var theme = mode === "auto"
+      ? hour >= 7 && hour < 19 ? "light" : "dark"
+      : mode;
+    var root = document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    root.dataset.themeMode = mode;
+    root.style.colorScheme = theme;
   })();
 `;
 
