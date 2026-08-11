@@ -34,8 +34,14 @@ export type Project = {
 export type Experience = {
   company: string;
   role: string;
+  positioning?: string;
+  summary?: string;
   period: string;
   type: "full-time" | "intern";
   highlights: string[];
+  focusAreas?: {
+    title: string;
+    description: string;
+  }[];
   stack?: string[];
 };

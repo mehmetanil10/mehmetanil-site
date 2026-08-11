@@ -128,6 +128,9 @@ export const experiences: Experience[] = [
   {
     company: "Uzser Teknoloji",
     role: "Software Support Specialist",
+    positioning: "Yazılım Destek · Raporlama · İş Analizi",
+    summary:
+      "Kurumsal müşterilerin Logo ERP sistemlerinde yazılım desteği sağladım; kullanıcı ve departman ihtiyaçlarını analiz ederek SQL Server tabanlı özel raporlar, sorgular ve veri çözümleri geliştirdim.",
     period: "Kasım 2024 – Şubat 2026",
     type: "full-time",
     highlights: [
@@ -139,11 +142,31 @@ export const experiences: Experience[] = [
       "Yüksek trafikli production ortamlarında sorgu optimizasyonu uygulandı",
       "Canlı sistemlerde minimal downtime ile veritabanı bakım ve performans iyileştirmeleri yapıldı",
     ],
+    focusAreas: [
+      {
+        title: "Yazılım desteği",
+        description:
+          "Logo ERP kullanıcı sorunları, canlı sistem takibi ve operasyonel teknik destek süreçleri.",
+      },
+      {
+        title: "Raporlama ve veri",
+        description:
+          "SQL sorguları, view'lar, özel raporlar ve karar destek çıktılarının geliştirilmesi.",
+      },
+      {
+        title: "İş analizi",
+        description:
+          "Kullanıcı ihtiyaçlarının anlaşılması, iş süreçlerinin incelenmesi ve teknik çözüme dönüştürülmesi.",
+      },
+    ],
     stack: ["SQL Server", "T-SQL", "ERP (Logo)", "Index Tuning", "Execution Plans"],
   },
   {
     company: "SYPR Yazılım Yapay Zeka",
     role: "Intern Software Engineer",
+    positioning: "Yapay Zekâ · Web Uygulaması",
+    summary:
+      "AI destekli reklam optimizasyon ürününün web uygulaması ve algoritma entegrasyonlarında görev aldım.",
     period: "Şubat 2024 – Haziran 2024",
     type: "intern",
     highlights: [
@@ -151,11 +174,26 @@ export const experiences: Experience[] = [
       "Müşteriler için reklam verimliliğini artıran AI çözümleri geliştirildi",
       "Reklam stratejilerini optimize eden karmaşık algoritmalar entegre edildi",
     ],
+    focusAreas: [
+      {
+        title: "Ürün geliştirme",
+        description:
+          "Node.js, Vue.js ve AppSmith ile ürün özelliklerinin geliştirilmesine katkı.",
+      },
+      {
+        title: "AI entegrasyonu",
+        description:
+          "Reklam verimliliğine odaklanan algoritmaların uygulama akışına entegre edilmesi.",
+      },
+    ],
     stack: ["Node.js", "JavaScript", "Vue.js", "AppSmith"],
   },
   {
     company: "Teleset Group",
     role: "IT Intern",
+    positioning: "Süreç Tasarımı · Raporlama",
+    summary:
+      "İş akışlarının dijitalleştirilmesi, form tasarımı ve operasyonel raporlama çalışmalarına destek verdim.",
     period: "Eylül 2023 – Ocak 2024",
     type: "intern",
     highlights: [
@@ -163,17 +201,44 @@ export const experiences: Experience[] = [
       "Raporlama ve dijitalleşme çalışmalarına katkıda bulunuldu",
       "Süreç iyileştirmeleri ile sistem verimliliği artırıldı",
     ],
+    focusAreas: [
+      {
+        title: "Süreç dijitalleştirme",
+        description:
+          "Form ve iş akışı yönetim araçlarının hazırlanmasına verilen destek.",
+      },
+      {
+        title: "Operasyonel raporlama",
+        description:
+          "Dijitalleşme ve süreç iyileştirme çalışmalarını destekleyen raporlama faaliyetleri.",
+      },
+    ],
     stack: ["BPM", "Forms", "Workflow", "Reporting"],
   },
   {
     company: "PilenPak Ambalaj",
     role: "IT Intern",
+    positioning: "IT Operasyonları · Uygulama Desteği",
+    summary:
+      "Fabrika uygulamalarının sürekliliğini destekledim ve operasyonel yazılım süreçlerinde geliştirme çalışmalarına katkı sağladım.",
     period: "Haziran 2023 – Ağustos 2023",
     type: "intern",
     highlights: [
       "Fabrika programları yönetildi ve teknik sorunlar çözüldü",
       "Java, JSP ve PL/SQL ile operasyonel süreçler optimize edildi",
       "Program stabilitesi ve fabrika operasyonları iyileştirildi",
+    ],
+    focusAreas: [
+      {
+        title: "Teknik operasyon",
+        description:
+          "Fabrika programlarının takibi ve kullanıcıların karşılaştığı teknik sorunların çözümü.",
+      },
+      {
+        title: "Uygulama geliştirme",
+        description:
+          "Java, JSP ve PL/SQL ile operasyonel süreçleri destekleyen geliştirme çalışmaları.",
+      },
     ],
     stack: ["Java", "JSP", "PL/SQL"],
   },
