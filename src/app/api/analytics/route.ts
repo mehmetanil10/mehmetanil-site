@@ -1,6 +1,12 @@
 import { createHmac } from "crypto";
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import {
+  getAdminUrl,
+  isTelegramConfigured,
+  sendTelegramMessage,
+} from "@/lib/telegram";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -8,6 +14,7 @@ export const runtime = "nodejs";
 const ONLINE_WINDOW_MS = 90_000;
 const VISITOR_ID_PATTERN = /^[a-zA-Z0-9-]{20,80}$/;
 const SOURCE_PATTERN = /^(direct|linkedin|github|google|other:[a-z0-9.-]{1,64})$/;
+const VISITOR_MILESTONES = [100, 50, 25, 10] as const;
 
 function dateInIstanbul(daysAgo = 0) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -65,6 +72,63 @@ async function getStats() {
     lastSevenDays.reduce((sum, day) => sum + day._count._all, 0) / 7;
 
   return { today, yesterday, online, sevenDayAverage };
+}
+
+async function notifyVisitorMilestone(date: string, visitorCount: number) {
+  if (!isTelegramConfigured()) return;
+
+  const threshold = VISITOR_MILESTONES.find((value) => visitorCount >= value);
+  if (!threshold) return;
+
+  const existing = await prisma.visitorMilestoneNotification.findUnique({
+    where: { date_threshold: { date, threshold } },
+    select: { id: true },
+  });
+  if (existing) return;
+
+  let notificationId: string;
+  try {
+    const notification = await prisma.visitorMilestoneNotification.create({
+      data: { date, threshold },
+      select: { id: true },
+    });
+    notificationId = notification.id;
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return;
+    }
+    console.error("Visitor milestone reservation failed:", error);
+    return;
+  }
+
+  const formattedDate = new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(`${date}T12:00:00Z`));
+  const sent = await sendTelegramMessage(
+    [
+      "🎯 Günlük ziyaretçi hedefi",
+      "",
+      `Bugün ${threshold} benzersiz ziyaretçiye ulaştınız.`,
+      `Güncel sayı: ${visitorCount}`,
+      `Tarih: ${formattedDate}`,
+      "",
+      `Dashboard: ${getAdminUrl("/admin")}`,
+    ].join("\n"),
+  );
+
+  if (!sent) {
+    await prisma.visitorMilestoneNotification
+      .delete({ where: { id: notificationId } })
+      .catch((error) => {
+        console.error("Visitor milestone reservation cleanup failed:", error);
+      });
+  }
 }
 
 export async function GET() {
@@ -127,6 +191,7 @@ export async function POST(request: Request) {
     }
 
     const stats = await getStats();
+    await notifyVisitorMilestone(date, stats.today);
     return NextResponse.json(stats, {
       headers: { "Cache-Control": "no-store, max-age=0" },
     });

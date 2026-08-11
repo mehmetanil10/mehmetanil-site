@@ -110,6 +110,16 @@ model DailyVisitor {
   @@index([date])
 }
 
+model VisitorMilestoneNotification {
+  id        String   @id @default(cuid())
+  date      String   @db.VarChar(10)
+  threshold Int
+  createdAt DateTime @default(now())
+
+  @@unique([date, threshold])
+  @@index([date])
+}
+
 model ActiveVisitor {
   visitorHash String   @id @db.VarChar(64)
   createdAt   DateTime @default(now())

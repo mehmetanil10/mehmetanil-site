@@ -5,6 +5,11 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { contactSchema } from "@/lib/validations";
 import type { ContactFormValues } from "@/lib/validations";
+import {
+  getAdminUrl,
+  notificationLine,
+  sendTelegramMessage,
+} from "@/lib/telegram";
 
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const RATE_LIMIT_MAX_MESSAGES = 3;
@@ -118,8 +123,30 @@ export async function submitContact(
     };
   }
 
-  await prisma.contactMessage.create({
+  const createdMessage = await prisma.contactMessage.create({
     data: { ...messageData, ipHash },
   });
+
+  const messageTime = new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(createdMessage.createdAt);
+
+  await sendTelegramMessage(
+    [
+      "📩 Yeni iletişim mesajı",
+      "",
+      `Gönderen: ${notificationLine(createdMessage.name, 80)}`,
+      `Konu: ${notificationLine(createdMessage.subject, 120)}`,
+      `Tarih: ${messageTime}`,
+      "",
+      `Admin panelinde görüntüle: ${getAdminUrl("/admin/messages")}`,
+    ].join("\n"),
+  );
+
   return { success: true };
 }
