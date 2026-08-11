@@ -47,23 +47,114 @@ const careerPath = [
 export default function ExperiencePage() {
   return (
     <div className="mx-auto max-w-6xl px-6 pb-24 pt-16 md:pt-24">
-      <section className="max-w-5xl">
-        <div className="mb-5 flex items-center gap-3">
-          <span className="h-px w-10 bg-primary" />
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
-            Kariyer & Mühendislik
-          </p>
-        </div>
+      <section>
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] lg:items-start">
+          <div>
+            <div className="mb-5 flex items-center gap-3">
+              <span className="h-px w-10 bg-primary" />
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-primary">
+                Kariyer & Mühendislik
+              </p>
+            </div>
 
-        <h1 className="max-w-4xl text-4xl font-semibold leading-[1.12] tracking-[-0.035em] md:text-6xl">
-          Sistem desteğinden ürün geliştirmeye uzanan mühendislik yolculuğu.
-        </h1>
-        <p className="mt-7 max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
-          Kurumsal ERP sistemleri, canlı veritabanları, süreç otomasyonu ve
-          yapay zekâ destekli uygulamalar üzerinde çalıştım. Operasyonel
-          ihtiyaçları analiz ederek güvenilir, ölçülebilir ve sürdürülebilir
-          yazılım çözümlerine dönüştürüyorum.
-        </p>
+            <h1 className="max-w-4xl text-4xl font-semibold leading-[1.12] tracking-[-0.035em] md:text-6xl">
+              Sistem desteğinden ürün geliştirmeye uzanan mühendislik yolculuğu.
+            </h1>
+            <p className="mt-7 max-w-3xl text-base leading-8 text-muted-foreground md:text-lg">
+              Kurumsal ERP sistemleri, canlı veritabanları, süreç otomasyonu ve
+              yapay zekâ destekli uygulamalar üzerinde çalıştım. Operasyonel
+              ihtiyaçları analiz ederek güvenilir, ölçülebilir ve sürdürülebilir
+              yazılım çözümlerine dönüştürüyorum.
+            </p>
+          </div>
+
+          <aside className="overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/[0.075] via-card to-card shadow-[0_24px_70px_-48px_hsl(var(--primary)/0.65)]">
+            <div className="border-b border-border/50 p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <BriefcaseBusiness size={19} />
+                </span>
+                <div>
+                  <p
+                    lang="en"
+                    className="font-mono text-[10px] tracking-[0.18em] text-primary"
+                  >
+                    CAREER SNAPSHOT
+                  </p>
+                  <p className="mt-1 text-sm font-medium">
+                    Profesyonel gelişim özeti
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5">
+              <div className="rounded-xl border border-border/50 bg-background/50 p-4">
+                <p className="font-mono text-2xl font-semibold tracking-tight">
+                  2023 — 2026
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Profesyonel gelişim dönemi
+                </p>
+
+                <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border/50 pt-4">
+                  <div>
+                    <p className="text-xl font-semibold text-primary">
+                      {experiences.length}
+                    </p>
+                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                      Çalışılan kurum
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium leading-5">
+                      Tam zamanlı + staj
+                    </p>
+                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                      Deneyim yapısı
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 rounded-xl border border-border/50 bg-background/50 p-4">
+                <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-primary">
+                  Son görev
+                </p>
+                <p className="mt-2 text-sm font-medium">
+                  Software Support Specialist
+                </p>
+                <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                  Yazılım Destek · Raporlama · İş Analizi
+                </p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {["ERP", "SQL Server", "Raporlama", "İş Analizi"].map(
+                  (focus) => (
+                    <span
+                      key={focus}
+                      className="rounded-md border border-border/50 bg-secondary/70 px-2.5 py-1 font-mono text-[9px] text-muted-foreground"
+                    >
+                      {focus}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+
+            <a
+              href="#profesyonel-deneyim"
+              className="group flex items-center justify-between border-t border-border/50 px-5 py-4 text-xs text-muted-foreground transition-colors hover:bg-primary/[0.045] hover:text-primary"
+            >
+              Zaman çizelgesini incele
+              <ArrowRight
+                size={13}
+                className="rotate-90 transition-transform group-hover:translate-y-0.5"
+              />
+            </a>
+          </aside>
+        </div>
 
         <div className="mt-10 grid gap-3 sm:grid-cols-3">
           {engineeringFocus.map((item) => (
@@ -87,7 +178,10 @@ export default function ExperiencePage() {
         </div>
       </section>
 
-      <section className="mt-24 border-t border-border/50 pt-14 md:mt-28">
+      <section
+        id="profesyonel-deneyim"
+        className="mt-24 scroll-mt-28 border-t border-border/50 pt-14 md:mt-28"
+      >
         <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
