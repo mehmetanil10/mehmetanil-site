@@ -3,12 +3,22 @@
 import { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Github, Linkedin, MapPin } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Github,
+  Linkedin,
+  Loader2,
+  MapPin,
+  RefreshCw,
+  ShieldCheck,
+} from "lucide-react";
 import Link from "next/link";
 import { contactSchema, type ContactFormValues } from "@/lib/validations";
 import { submitContact } from "@/actions/contact-actions";
 import {
   TurnstileWidget,
+  type TurnstileStatus,
   type TurnstileWidgetHandle,
 } from "@/components/contact/turnstile-widget";
 
@@ -19,6 +29,8 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileStatus, setTurnstileStatus] =
+    useState<TurnstileStatus>("loading");
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
@@ -38,7 +50,13 @@ export default function ContactPage() {
 
   const handleTurnstileError = useCallback(() => {
     setTurnstileToken(null);
-    setError(TURNSTILE_ERROR);
+  }, []);
+
+  const retryTurnstile = useCallback(() => {
+    setError("");
+    setTurnstileToken(null);
+    setTurnstileStatus("loading");
+    turnstileRef.current?.retry();
   }, []);
 
   const onSubmit = async (data: ContactFormValues) => {
@@ -179,12 +197,71 @@ export default function ContactPage() {
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.message.message}</p>
                   )}
                 </div>
-                <TurnstileWidget
-                  ref={turnstileRef}
-                  siteKey={turnstileSiteKey}
-                  onVerify={handleTurnstileVerify}
-                  onError={handleTurnstileError}
-                />
+                <div className="rounded-lg border border-border bg-card/60 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <ShieldCheck size={17} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">İnsan Doğrulaması</p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                        Mesajınızı gönderebilmek için aşağıdaki doğrulamayı
+                        tamamlamanız gerekiyor.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <TurnstileWidget
+                      ref={turnstileRef}
+                      siteKey={turnstileSiteKey}
+                      onVerify={handleTurnstileVerify}
+                      onError={handleTurnstileError}
+                      onStatusChange={setTurnstileStatus}
+                    />
+                  </div>
+
+                  <div className="mt-2 min-h-5" aria-live="polite">
+                    {turnstileStatus === "loading" ? (
+                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Loader2 size={13} className="animate-spin text-primary" />
+                        İnsan doğrulaması yükleniyor...
+                      </p>
+                    ) : null}
+                    {turnstileStatus === "ready" ? (
+                      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <ShieldCheck size={13} className="text-primary" />
+                        Göndermeden önce doğrulamayı tamamlayın.
+                      </p>
+                    ) : null}
+                    {turnstileStatus === "verified" ? (
+                      <p className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 size={13} />
+                        Doğrulama başarılı.
+                      </p>
+                    ) : null}
+                    {turnstileStatus === "error" ? (
+                      <div className="rounded-md border border-red-500/20 bg-red-500/5 p-3">
+                        <p className="flex items-start gap-1.5 text-xs leading-relaxed text-red-600 dark:text-red-400">
+                          <AlertCircle size={13} className="mt-0.5 shrink-0" />
+                          İnsan doğrulaması yüklenemedi. İnternet bağlantınızı
+                          kontrol edip tekrar deneyin.
+                        </p>
+                        <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                          Sorun devam ederse reklam engelleyicinizi geçici olarak
+                          kapatmanız gerekebilir.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={retryTurnstile}
+                          className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium transition-colors hover:border-primary/40 hover:text-primary"
+                        >
+                          <RefreshCw size={12} /> Doğrulamayı Tekrar Yükle
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
                 {error && (
                   <p className="text-xs text-red-600 dark:text-red-400" role="alert">
                     {error}
@@ -195,7 +272,15 @@ export default function ContactPage() {
                   disabled={isSubmitting || !turnstileToken}
                   className="w-full rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isSubmitting ? "Gönderiliyor..." : "Gönder"}
+                  {isSubmitting
+                    ? "Gönderiliyor..."
+                    : turnstileStatus === "loading"
+                      ? "Doğrulama yükleniyor..."
+                      : turnstileStatus === "error"
+                        ? "Doğrulamayı tekrar yükleyin"
+                        : !turnstileToken
+                          ? "Önce doğrulamayı tamamlayın"
+                          : "Mesajı Gönder"}
                 </button>
               </form>
             )}
