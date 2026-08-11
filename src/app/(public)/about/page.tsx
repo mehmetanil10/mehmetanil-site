@@ -138,7 +138,7 @@ const technologyGroups = [
     technologies: ["SQL Server", "PostgreSQL", "MongoDB", "T-SQL"],
   },
   {
-    title: "AI & Engineering",
+    title: "AI & ENGINEERING",
     technologies: ["Python", "XGBoost", "OpenCV", "Git"],
   },
 ];
@@ -193,8 +193,11 @@ export default function AboutPage() {
                   <GraduationCap size={20} />
                 </span>
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
-                    Engineer profile
+                  <p
+                    lang="en"
+                    className="font-mono text-[10px] tracking-[0.18em] text-primary"
+                  >
+                    ENGINEER PROFILE
                   </p>
                   <p className="mt-1 text-sm font-medium">Bilgisayar Mühendisliği</p>
                 </div>
@@ -390,7 +393,10 @@ export default function AboutPage() {
                 key={group.title}
                 className="rounded-xl border border-border/60 bg-card p-5"
               >
-                <h3 className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">
+                <h3
+                  lang="en"
+                  className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary"
+                >
                   {group.title}
                 </h3>
                 <div className="mt-4 flex flex-wrap gap-2">
