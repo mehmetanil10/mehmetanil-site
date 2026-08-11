@@ -60,7 +60,10 @@ export default async function HomePage() {
       <HeroAnimated />
 
       {/* ── Expertise ── */}
-      <section className="py-16 border-t border-border/50">
+      <section
+        id="engineering-expertise"
+        className="scroll-mt-20 border-t border-border/50 py-16"
+      >
         <div className="mb-10 max-w-2xl">
           <h2 className="text-sm font-mono text-muted-foreground uppercase tracking-widest">
             Mühendislik Yetkinlikleri

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 
 const TITLES = [
   "Backend Engineer",
@@ -130,7 +130,10 @@ export function HeroAnimated() {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative overflow-hidden py-20 md:py-28">
+    <section
+      ref={heroRef}
+      className="relative overflow-x-clip py-20 md:py-24 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:py-14"
+    >
       {/* Smooth pointer-following ambient spotlight */}
       <div
         ref={spotlightRef}
@@ -245,6 +248,17 @@ export function HeroAnimated() {
           </div>
         </div>
       </div>
+
+      <a
+        href="#engineering-expertise"
+        className="group absolute bottom-5 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-primary lg:flex"
+      >
+        Aşağı kaydır
+        <ArrowDown
+          size={12}
+          className="transition-transform duration-300 group-hover:translate-y-1"
+        />
+      </a>
     </section>
   );
 }
