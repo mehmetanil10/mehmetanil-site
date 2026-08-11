@@ -19,7 +19,7 @@ const themeOptions: Array<{
 }> = [
   {
     mode: "auto",
-    label: "Otomatik tema (07.00–19.00 açık)",
+    label: "Otomatik tema",
     shortLabel: "Otomatik",
     icon: Clock3,
   },
