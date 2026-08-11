@@ -7,6 +7,7 @@ import { ArrowUpRight, FileText, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/layout/home-theme-toggle";
 import { CvMenu, cvLinks } from "@/components/layout/cv-menu";
+import { useAdminAvailability } from "@/components/analytics/use-admin-availability";
 
 const navLinks = [
   { href: "/", label: "Ana Sayfa" },
@@ -21,6 +22,7 @@ const navLinks = [
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const adminOnline = useAdminAvailability();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
@@ -35,14 +37,28 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
+              title={
+                link.href === "/contact" && adminOnline
+                  ? "Şu an çevrimiçi"
+                  : undefined
+              }
               className={cn(
-                "px-3 py-1.5 text-sm rounded-md transition-colors",
+                "flex items-center gap-2 px-3 py-1.5 text-sm rounded-md transition-colors",
                 pathname === link.href
                   ? "text-foreground bg-secondary"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
               )}
             >
               {link.label}
+              {link.href === "/contact" && adminOnline ? (
+                <>
+                  <span className="relative flex h-2 w-2" aria-hidden="true">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.75)]" />
+                  </span>
+                  <span className="sr-only">Şu an çevrimiçi</span>
+                </>
+              ) : null}
             </Link>
           ))}
           <div className="ml-2 flex items-center gap-2 border-l border-border/60 pl-3">
@@ -82,13 +98,19 @@ export function Navbar() {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "px-3 py-2 text-sm rounded-md transition-colors",
+                  "flex items-center justify-between gap-3 px-3 py-2 text-sm rounded-md transition-colors",
                   pathname === link.href
                     ? "text-foreground bg-secondary"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                {link.label}
+                <span>{link.label}</span>
+                {link.href === "/contact" && adminOnline ? (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_7px_rgba(16,185,129,0.7)]" />
+                    Çevrimiçi
+                  </span>
+                ) : null}
               </Link>
             ))}
 

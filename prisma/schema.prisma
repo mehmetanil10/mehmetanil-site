@@ -118,6 +118,14 @@ model ActiveVisitor {
   @@index([lastSeenAt])
 }
 
+model AdminPresence {
+  id         String   @id @default("admin")
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @updatedAt
+
+  @@index([lastSeenAt])
+}
+
 model PageView {
   id          String   @id @default(cuid())
   date        String   @db.VarChar(10)

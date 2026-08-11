@@ -6,6 +6,7 @@ import { LayoutDashboard, FileText, Tag, LogOut, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/layout/home-theme-toggle";
+import { AdminPresenceHeartbeat } from "@/components/analytics/admin-presence-heartbeat";
 
 function AdminSidebar() {
   const pathname = usePathname();
@@ -92,6 +93,7 @@ export default function AdminLayoutClient({
 }) {
   return (
     <div className="flex min-h-screen bg-background">
+      <AdminPresenceHeartbeat />
       <AdminSidebar />
       <main className="flex-1 overflow-auto">{children}</main>
     </div>
