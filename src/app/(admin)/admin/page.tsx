@@ -313,7 +313,7 @@ export default async function AdminDashboardPage() {
   const todayVisitors = stats.visitorChartData.at(-1)?.count ?? 0;
 
   return (
-    <div className="p-8">
+    <div className="min-w-0 max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
       <div className="mb-8">
         <h1 className="text-xl font-semibold">Dashboard</h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
@@ -404,7 +404,7 @@ export default async function AdminDashboardPage() {
       />
 
       <div className="grid min-w-0 gap-6 xl:grid-cols-2">
-        <section className="mt-6 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
+        <section className="mt-6 min-w-0 overflow-hidden rounded-xl border border-border/50 bg-card p-5 sm:p-6">
           <div className="flex items-center gap-2">
             <Trophy size={18} className="text-amber-600 dark:text-yellow-400" />
             <h2 className="font-semibold">En çok okunan blog yazıları</h2>
@@ -423,15 +423,20 @@ export default async function AdminDashboardPage() {
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className="flex items-center gap-4 py-3 transition-colors hover:text-primary"
+                  className="flex min-w-0 items-start gap-3 py-3 transition-colors hover:text-primary sm:items-center sm:gap-4"
                 >
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary font-mono text-xs text-muted-foreground">
                     {index + 1}
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                    {post.title}
+                  <span className="min-w-0 flex-1">
+                    <span className="line-clamp-2 text-sm font-medium sm:truncate">
+                      {post.title}
+                    </span>
+                    <span className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground sm:hidden">
+                      <Eye size={12} /> {post._count.views} görüntüleme
+                    </span>
                   </span>
-                  <span className="inline-flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="hidden shrink-0 items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
                     <Eye size={13} /> {post._count.views} görüntüleme
                   </span>
                 </Link>

@@ -45,7 +45,7 @@ export function VisitorChart({
       : "100%";
 
   return (
-    <section className="mt-6 min-w-0 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
+    <section className="mt-6 min-w-0 w-full max-w-full overflow-hidden rounded-xl border border-border/50 bg-card p-5 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
@@ -55,14 +55,14 @@ export function VisitorChart({
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
         </div>
 
-        <div className="flex items-center gap-1 self-start rounded-md border border-border/50 bg-background/50 p-1">
+        <div className="grid w-full grid-cols-2 gap-1 self-start rounded-md border border-border/50 bg-background/50 p-1 sm:flex sm:w-auto sm:items-center">
           {ranges.map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => setRange(item)}
               className={cn(
-                "rounded px-2.5 py-1 text-xs transition-colors",
+                "whitespace-nowrap rounded px-2.5 py-1 text-xs transition-colors",
                 range === item
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground",
@@ -91,7 +91,7 @@ export function VisitorChart({
         </div>
       </div>
 
-      <div className="mt-6 overflow-x-auto pb-2">
+      <div className="mt-6 max-w-full overflow-x-auto overscroll-x-contain pb-2">
         <div
           className="flex h-64 items-end gap-1.5 sm:gap-2"
           style={{ minWidth: chartMinWidth }}
