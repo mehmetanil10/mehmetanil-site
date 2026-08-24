@@ -2,6 +2,54 @@ import type { Project, Experience } from "@/types";
 
 export const projects: Project[] = [
   {
+    title: "PulsePilot AI — Product Feedback & Engineering Copilot",
+    slug: "pulsepilot-ai",
+    year: 2026,
+    description:
+      "Müşteri geri bildirimlerini yapılandırılmış içgörülere, açıklanabilir önceliklere ve insan onaylı mühendislik aksiyonlarına dönüştüren AI destekli product feedback copilot.",
+    longDescription:
+      "PulsePilot AI, API üzerinden alınan müşteri geri bildirimlerini yapılandırılmış ürün içgörülerine ve takip edilebilir mühendislik aksiyonlarına dönüştüren yapay zekâ destekli bir ürün yönetimi copilotudur. Sistem; geri bildirimlerin duygu, kategori, aciliyet ve tema analizini gerçekleştirir, pgvector tabanlı benzerlik aramasıyla ilişkili müşteri sinyallerini gruplandırır ve açıklanabilir öncelik skorları oluşturur. Kritik AI aksiyonları doğrudan çalıştırılmaz; öneriler human-in-the-loop inceleme ekranına gönderilir ve yalnızca yetkili kullanıcı onayından sonra mühendislik backlog’una aktarılır. Workspace tabanlı veri izolasyonu, JWT kimlik doğrulama, güvenli API gateway, PII redaction, OpenTelemetry gözlemlenebilirliği, Docker altyapısı ve GitHub Actions kalite kontrolleriyle production seviyesine yakın bir mimari hedeflenmiştir.",
+    stack: [
+      ".NET 10",
+      "Next.js 16",
+      "PostgreSQL",
+      "pgvector",
+      "OpenAI API",
+      "Docker",
+      "OpenTelemetry",
+      "GitHub Actions",
+    ],
+    featured: true,
+    type: "ai",
+    githubUrl: "https://github.com/mehmetanil10/pulsepilot-ai",
+    gallery: [
+      {
+        src: "/images/projects/pulsepilot/landing.png",
+        alt: "PulsePilot AI ürün tanıtım ve açılış sayfası",
+      },
+      {
+        src: "/images/projects/pulsepilot/dashboard.png",
+        alt: "PulsePilot AI ürün sinyalleri ve işleme durumu dashboard'u",
+      },
+      {
+        src: "/images/projects/pulsepilot/feedback.png",
+        alt: "PulsePilot AI müşteri geri bildirimi analiz ekranı",
+      },
+      {
+        src: "/images/projects/pulsepilot/actions.png",
+        alt: "PulsePilot AI human-in-the-loop aksiyon inceleme ekranı",
+      },
+      {
+        src: "/images/projects/pulsepilot/backlog.png",
+        alt: "PulsePilot AI mühendislik backlog ekranı",
+      },
+      {
+        src: "/images/projects/pulsepilot/copilot.png",
+        alt: "PulsePilot AI workspace copilot ekranı",
+      },
+    ],
+  },
+  {
     title: "VehicleGuard — Öngörülü Filo Bakım Platformu",
     slug: "vehicleguard",
     year: 2026,
