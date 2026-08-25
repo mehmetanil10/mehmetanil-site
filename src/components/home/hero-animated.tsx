@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowDown, ArrowRight } from "lucide-react";
@@ -55,6 +55,7 @@ export function HeroAnimated() {
   const heroRef = useRef<HTMLElement>(null);
   const blobRef = useRef<HTMLDivElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
+  const scrollFrameRef = useRef<number | null>(null);
 
   // Pointer-following ambient light. It is intentionally disabled for touch
   // devices and visitors who prefer reduced motion.
@@ -128,6 +129,67 @@ export function HeroAnimated() {
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (scrollFrameRef.current !== null) {
+        cancelAnimationFrame(scrollFrameRef.current);
+      }
+    };
+  }, []);
+
+  const handleScrollToExpertise = (event: MouseEvent<HTMLAnchorElement>) => {
+    const target = document.getElementById("engineering-expertise");
+
+    if (!target) return;
+
+    event.preventDefault();
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion) {
+      target.scrollIntoView({ behavior: "auto", block: "start" });
+      window.history.replaceState(null, "", "#engineering-expertise");
+      return;
+    }
+
+    if (scrollFrameRef.current !== null) {
+      cancelAnimationFrame(scrollFrameRef.current);
+    }
+
+    const startY = window.scrollY;
+    const scrollMarginTop =
+      Number.parseFloat(window.getComputedStyle(target).scrollMarginTop) || 0;
+    const targetY = Math.max(
+      0,
+      target.getBoundingClientRect().top + startY - scrollMarginTop,
+    );
+    const distance = targetY - startY;
+    const duration = 800;
+    const startedAt = performance.now();
+
+    const easeInOutCubic = (progress: number) =>
+      progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    const animateScroll = (now: number) => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+
+      if (progress < 1) {
+        scrollFrameRef.current = requestAnimationFrame(animateScroll);
+        return;
+      }
+
+      scrollFrameRef.current = null;
+      window.history.replaceState(null, "", "#engineering-expertise");
+    };
+
+    scrollFrameRef.current = requestAnimationFrame(animateScroll);
+  };
 
   return (
     <section
@@ -251,6 +313,7 @@ export function HeroAnimated() {
 
       <a
         href="#engineering-expertise"
+        onClick={handleScrollToExpertise}
         className="group absolute bottom-5 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground transition-colors hover:text-primary lg:flex"
       >
         Aşağı kaydır
