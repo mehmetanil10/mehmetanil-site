@@ -289,6 +289,147 @@
     animation: none;
   }
 }
+
+/* Contact communication console */
+@keyframes contact-orbit-spin {
+  to {
+    transform: translate(var(--console-shift-x), var(--console-shift-y)) rotate(360deg);
+  }
+}
+
+@keyframes contact-orbit-spin-reverse {
+  to {
+    transform: translate(var(--console-shift-x), var(--console-shift-y)) rotate(-360deg);
+  }
+}
+
+@keyframes contact-core-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes contact-node-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(8px, -6px, 0);
+  }
+}
+
+@keyframes contact-node-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-7px, 5px, 0);
+  }
+}
+
+.contact-console-pointer {
+  background: radial-gradient(
+    220px circle at var(--console-x) var(--console-y),
+    hsl(var(--primary) / 0.14),
+    transparent 66%
+  );
+  transition: opacity 250ms ease;
+}
+
+.contact-console-grid {
+  background-image:
+    linear-gradient(hsl(var(--primary) / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(circle, #000 22%, transparent 72%);
+}
+
+.contact-console-orbit {
+  transition: transform 300ms ease-out;
+  will-change: transform;
+}
+
+.contact-console-orbit-outer {
+  animation: contact-orbit-spin 22s linear infinite;
+}
+
+.contact-console-orbit-outer::before,
+.contact-console-orbit-inner::before {
+  position: absolute;
+  content: "";
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  box-shadow: 0 0 14px hsl(var(--primary) / 0.85);
+}
+
+.contact-console-orbit-outer::before {
+  left: 50%;
+  top: -4px;
+  height: 7px;
+  width: 7px;
+}
+
+.contact-console-orbit-inner {
+  animation: contact-orbit-spin-reverse 15s linear infinite;
+}
+
+.contact-console-orbit-inner::before {
+  bottom: 7px;
+  right: 5px;
+  height: 5px;
+  width: 5px;
+  opacity: 0.75;
+}
+
+.contact-console-core {
+  transform: translate3d(
+    var(--console-shift-x),
+    var(--console-shift-y),
+    0
+  );
+  transition: transform 300ms ease-out;
+}
+
+.contact-console-core-pulse {
+  animation: contact-core-pulse 2.8s ease-in-out infinite;
+}
+
+.contact-signal-node-a {
+  animation: contact-node-drift-a 4.4s ease-in-out infinite;
+}
+
+.contact-signal-node-b {
+  animation: contact-node-drift-b 5.2s ease-in-out infinite;
+}
+
+.light .contact-console-pointer {
+  opacity: 0.45;
+}
+
+.light .contact-console-grid {
+  opacity: 0.28;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-console-orbit,
+  .contact-console-core-pulse,
+  .contact-signal-node {
+    animation: none;
+  }
+
+  .contact-console-core,
+  .contact-console-orbit {
+    transform: none;
+  }
+}
 /* ── globals.css'e ekle (mevcut içeriğin ALTINA yapıştır) ── */
 
 /* Fade-in (hero stagger için) */

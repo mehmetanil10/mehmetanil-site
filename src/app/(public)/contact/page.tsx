@@ -21,6 +21,7 @@ import {
   type TurnstileStatus,
   type TurnstileWidgetHandle,
 } from "@/components/contact/turnstile-widget";
+import { ContactConsole } from "@/components/contact/contact-console";
 
 const TURNSTILE_ERROR =
   "İnsan doğrulaması başarısız oldu. Lütfen tekrar deneyin.";
@@ -90,14 +91,16 @@ export default function ContactPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-20">
-      <div className="max-w-3xl">
+      <div>
+        <div className="max-w-3xl">
         <p className="mb-3 font-mono text-sm text-primary">/ iletişim</p>
         <h1 className="text-3xl font-semibold tracking-tight">İletişim</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Proje, işbirliği veya herhangi bir konu için mesaj gönderebilirsin.
         </p>
+        </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-2">
+        <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-[minmax(180px,0.7fr)_minmax(360px,1.3fr)] lg:grid-cols-[minmax(170px,0.62fr)_minmax(360px,1.28fr)_minmax(270px,0.95fr)] lg:gap-8">
           <div>
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -285,6 +288,8 @@ export default function ContactPage() {
               </form>
             )}
           </div>
+
+          <ContactConsole />
         </div>
       </div>
     </div>
