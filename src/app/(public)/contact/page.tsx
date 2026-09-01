@@ -110,7 +110,7 @@ export default function ContactPage() {
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Github size={16} className="text-primary" />
                 <Link
-                  href="https://github.com/"
+                  href="https://github.com/mehmetanil10/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-foreground"
@@ -121,7 +121,7 @@ export default function ContactPage() {
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Linkedin size={16} className="text-primary" />
                 <Link
-                  href="https://linkedin.com/in/"
+                  href="https://www.linkedin.com/in/mehmetanil2018/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-foreground"
