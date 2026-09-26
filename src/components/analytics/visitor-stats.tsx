@@ -98,7 +98,10 @@ export function VisitorStats({
   const refresh = useCallback(
     async (pageView = false) => {
       try {
-        const response = await fetch("/api/analytics", {
+        const endpoint = variant === "cards"
+          ? "/api/admin/analytics/summary"
+          : "/api/analytics";
+        const response = await fetch(endpoint, {
           method: track ? "POST" : "GET",
           headers: track ? { "Content-Type": "application/json" } : undefined,
           body: track
@@ -114,12 +117,13 @@ export function VisitorStats({
         });
 
         if (!response.ok) return;
-        setStats((await response.json()) as Stats);
+        const data = (await response.json()) as Partial<Stats>;
+        setStats((current) => ({ ...current, ...data }));
       } catch {
         // Sayaçlar sayfanın asıl içeriğini etkilememeli.
       }
     },
-    [pathname, track],
+    [pathname, track, variant],
   );
 
   useEffect(() => {

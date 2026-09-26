@@ -128,6 +128,17 @@ model ActiveVisitor {
   @@index([lastSeenAt])
 }
 
+model AnalyticsRateLimit {
+  ipHash             String   @id @db.VarChar(64)
+  windowStartedAt    DateTime
+  requestCount       Int      @default(0)
+  issueDate          String   @db.VarChar(10)
+  issuedVisitorCount Int      @default(0)
+  lastSeenAt         DateTime @updatedAt
+
+  @@index([lastSeenAt])
+}
+
 model AdminPresence {
   id         String   @id @default("admin")
   createdAt  DateTime @default(now())
