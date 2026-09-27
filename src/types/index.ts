@@ -31,6 +31,36 @@ export type Project = {
   }[];
 };
 
+export type ProjectCaseStudy = {
+  slug: string;
+  eyebrow: string;
+  overview: string;
+  signals: {
+    label: string;
+    value: string;
+  }[];
+  challenge: {
+    title: string;
+    description: string;
+  }[];
+  architecture: {
+    step: string;
+    title: string;
+    description: string;
+  }[];
+  flowTitle: string;
+  flowDescription: string;
+  flow: {
+    step: string;
+    title: string;
+    description: string;
+  }[];
+  engineering: {
+    title: string;
+    description: string;
+  }[];
+};
+
 export type Experience = {
   company: string;
   role: string;

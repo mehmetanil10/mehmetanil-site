@@ -1,4 +1,4 @@
-import type { Project, Experience } from "@/types";
+import type { Experience, Project, ProjectCaseStudy } from "@/types";
 
 export const projects: Project[] = [
   {
@@ -169,6 +169,297 @@ export const projects: Project[] = [
     featured: false,
     type: "ai",
     githubUrl: "",
+  },
+];
+
+export const projectCaseStudies: ProjectCaseStudy[] = [
+  {
+    slug: "pulsepilot-ai",
+    eyebrow: "AI PRODUCT INTELLIGENCE · HUMAN CONTROL",
+    overview:
+      "Dağınık müşteri sinyallerini analiz eden, ilişkili geri bildirimleri bir araya getiren ve kanıta bağlı mühendislik aksiyonları üreten production odaklı bir AI copilot.",
+    signals: [
+      { label: "Girdi", value: "API tabanlı feedback" },
+      { label: "Karar modeli", value: "Açıklanabilir öncelik" },
+      { label: "Kontrol", value: "Human-in-the-loop" },
+    ],
+    challenge: [
+      {
+        title: "Dağınık ürün sinyalleri",
+        description:
+          "Destek, anket ve ürün kanallarından gelen geri bildirimler farklı biçimlerde kaldığı için ortak temaları görmek ve gerçek problemi ayırmak zorlaşıyor.",
+      },
+      {
+        title: "Sezgisel önceliklendirme",
+        description:
+          "Sadece sesin yüksekliğine göre verilen kararlar; etki, aciliyet, tekrar ve müşteri kanıtı arasındaki ilişkiyi görünmez bırakıyor.",
+      },
+      {
+        title: "Kontrolsüz AI riski",
+        description:
+          "Bir modelin doğrudan backlog veya operasyonel sistemlerde işlem yapması; açıklanabilirlik, yetki ve denetlenebilirlik riskleri oluşturuyor.",
+      },
+    ],
+    architecture: [
+      {
+        step: "01",
+        title: "Güvenli veri alımı",
+        description:
+          "API gateway, JWT kimlik doğrulama, workspace izolasyonu ve PII redaction ile müşteri sinyalleri güvenli bir bağlamda sisteme alınır.",
+      },
+      {
+        step: "02",
+        title: "AI analiz katmanı",
+        description:
+          "Geri bildirimler duygu, kategori, aciliyet ve tema açısından analiz edilir; sonuçlar kaynak metinle birlikte saklanır.",
+      },
+      {
+        step: "03",
+        title: "Benzerlik ve öncelik",
+        description:
+          "pgvector tabanlı arama ilişkili sinyalleri gruplandırır; hacim, şiddet ve bağlam açıklanabilir bir öncelik skoruna dönüşür.",
+      },
+      {
+        step: "04",
+        title: "İzlenebilir mühendislik çıktısı",
+        description:
+          "Onaylanan öneriler, kaynak feedback ve karar bağını koruyarak mühendislik backlog'una aktarılır ve yaşam döngüsü boyunca izlenir.",
+      },
+    ],
+    flowTitle: "AI önerir, insan karar verir.",
+    flowDescription:
+      "PulsePilot kritik aksiyonları otomatik çalıştırmaz. Model kanıtı hazırlar; yetkili kullanıcı öneriyi inceler ve sistem yalnızca açık onaydan sonra izinli aracı çalıştırır.",
+    flow: [
+      {
+        step: "01",
+        title: "Sinyali anla",
+        description: "Model geri bildirimi analiz eder ve ilişkili müşteri kanıtını toplar.",
+      },
+      {
+        step: "02",
+        title: "Öneriyi açıkla",
+        description: "Aksiyon, öncelik skoru ve gerekçesi birlikte inceleme ekranına gelir.",
+      },
+      {
+        step: "03",
+        title: "İnsan onayı",
+        description: "Yetkili kullanıcı öneriyi onaylar veya reddeder; model tek başına karar vermez.",
+      },
+      {
+        step: "04",
+        title: "Sınırlı çalıştırma",
+        description: "Sadece allowlist içindeki araçlar çalışır ve sonuç backlog kaydına bağlanır.",
+      },
+    ],
+    engineering: [
+      {
+        title: "Tenant sınırları",
+        description:
+          "Workspace kimliği veri erişiminin her katmanına taşınarak müşteri verilerinin birbirinden ayrılması hedeflendi.",
+      },
+      {
+        title: "Gözlemlenebilir AI",
+        description:
+          "OpenTelemetry ile istekler, model işleme adımları ve hata akışları uçtan uca izlenebilir hâle getirildi.",
+      },
+      {
+        title: "Tekrarlanabilir altyapı",
+        description:
+          "Docker geliştirme ortamı ve GitHub Actions kalite kontrolleriyle kurulum ve doğrulama süreçleri standartlaştırıldı.",
+      },
+    ],
+  },
+  {
+    slug: "vehicleguard",
+    eyebrow: "PREDICTIVE MAINTENANCE · FLEET INTELLIGENCE",
+    overview:
+      "Araç telemetrisini sağlık skoru, risk seviyesi, kalan faydalı ömür tahmini ve takip edilebilir bakım uyarılarına dönüştüren uçtan uca filo platformu.",
+    signals: [
+      { label: "Girdi", value: "OBD-II telemetri" },
+      { label: "Tahmin", value: "Risk + RUL" },
+      { label: "Görünürlük", value: "5 sn canlı takip" },
+    ],
+    challenge: [
+      {
+        title: "Reaktif bakım maliyeti",
+        description:
+          "Arıza ortaya çıktıktan sonra harekete geçmek; plansız duruş, yüksek servis maliyeti ve operasyon kaybı oluşturuyor.",
+      },
+      {
+        title: "Parçalı sensör verisi",
+        description:
+          "Motor, sıcaklık, basınç ve aşınma sinyalleri tek başına anlamlı bir bakım kararı üretmek için yeterli bağlamı sunmuyor.",
+      },
+      {
+        title: "Operasyonel görünürlük",
+        description:
+          "Filo yöneticisinin araç sağlığını, aktif riskleri ve kritik uyarıları tek ekranda öncelik sırasıyla görebilmesi gerekiyor.",
+      },
+    ],
+    architecture: [
+      {
+        step: "01",
+        title: "Telemetri akışı",
+        description:
+          "OBD-II sensör verileri simüle edilir, doğrulanır ve araç kimliğiyle birlikte FastAPI katmanına aktarılır.",
+      },
+      {
+        step: "02",
+        title: "Tahmin işlem hattı",
+        description:
+          "XGBoost modelleri sağlık skoru, Düşük-Orta-Yüksek risk sınıfı ve kalan faydalı ömür tahmini üretir.",
+      },
+      {
+        step: "03",
+        title: "Durum ve uyarılar",
+        description:
+          "Tahmin sonuçları PostgreSQL üzerinde araç geçmişiyle saklanır; eşiklere göre otomatik uyarılar oluşturulur.",
+      },
+      {
+        step: "04",
+        title: "Canlı filo görünümü",
+        description:
+          "Next.js dashboard 5 saniyelik sorgulama döngüsüyle filo sağlığını ve yeni riskleri kullanıcıya taşır.",
+      },
+    ],
+    flowTitle: "Sensörden bakım kararına.",
+    flowDescription:
+      "VehicleGuard ham telemetriyi tek başına göstermez; veriyi operasyon ekibinin yorumlayabileceği risk, ömür ve aksiyon bağlamına dönüştürür.",
+    flow: [
+      {
+        step: "01",
+        title: "Veriyi al",
+        description: "Araç sensörlerinden gelen değerleri doğrula ve normalize et.",
+      },
+      {
+        step: "02",
+        title: "Sağlığı tahmin et",
+        description: "Model ile sağlık skoru, risk sınıfı ve RUL sonucunu üret.",
+      },
+      {
+        step: "03",
+        title: "Riski görünür kıl",
+        description: "Kritik sinyalleri uyarıya dönüştür ve ilgili araca bağla.",
+      },
+      {
+        step: "04",
+        title: "Aksiyonu izle",
+        description: "Filo ekranından araç durumunu ve kapanmamış uyarıları takip et.",
+      },
+    ],
+    engineering: [
+      {
+        title: "Servis ayrımı",
+        description:
+          "Next.js arayüz, FastAPI servisleri ve ML işlem hattı bağımsız sorumluluklarla ayrıştırıldı.",
+      },
+      {
+        title: "Güvenli erişim",
+        description:
+          "JWT tabanlı kimlik doğrulama ile dashboard ve araç operasyonları korumalı bir oturum üzerinden yürütüldü.",
+      },
+      {
+        title: "Dağıtık yayın",
+        description:
+          "Frontend Vercel, API Render üzerinde çalışacak şekilde production ortamına taşındı.",
+      },
+    ],
+  },
+  {
+    slug: "ydsxp",
+    eyebrow: "LEARNING SYSTEM · GAMIFIED PROGRESS",
+    overview:
+      "YDS ve YÖKDİL hazırlığını ölçülebilir günlük ilerlemeye dönüştüren; XP, hedef ve spaced repetition mekaniklerini birleştiren full-stack çalışma ürünü.",
+    signals: [
+      { label: "Motivasyon", value: "XP + seviye" },
+      { label: "Öğrenme", value: "SM-2 tekrar" },
+      { label: "Takip", value: "Günlük hedefler" },
+    ],
+    challenge: [
+      {
+        title: "Görünmeyen ilerleme",
+        description:
+          "Uzun sınav hazırlığında küçük günlük çalışmaların birikimi görünmediğinde motivasyonu korumak zorlaşıyor.",
+      },
+      {
+        title: "Plansız tekrar",
+        description:
+          "Kelimeleri rastgele tekrar etmek, öğrenilmiş ve unutulmaya yakın içerikler arasında doğru önceliği kuramıyor.",
+      },
+      {
+        title: "Dağınık çalışma kaydı",
+        description:
+          "Kelime, paragraf, test ve deneme çalışmalarını tek ilerleme modelinde birleştirmek gerekiyor.",
+      },
+    ],
+    architecture: [
+      {
+        step: "01",
+        title: "Çalışma kaydı",
+        description:
+          "Farklı çalışma türleri ortak bir XP modeline çevrilerek günlük aktivite olarak kaydedilir.",
+      },
+      {
+        step: "02",
+        title: "İlerleme motoru",
+        description:
+          "Kazanılan XP; seviye, günlük hedef ve çalışma serisi göstergelerini günceller.",
+      },
+      {
+        step: "03",
+        title: "Akıllı tekrar",
+        description:
+          "SM-2 algoritması flashcard tekrar zamanını kullanıcının performansına göre planlar.",
+      },
+      {
+        step: "04",
+        title: "Kalıcı veri",
+        description:
+          "Prisma ve PostgreSQL/Supabase katmanı kullanıcı ilerlemesini ve öğrenme geçmişini saklar.",
+      },
+    ],
+    flowTitle: "Çalışmayı görünür ilerlemeye dönüştür.",
+    flowDescription:
+      "YDSXP yalnızca süre tutmaz; her çalışmayı anlamlı bir ödüle bağlar ve tekrar edilmesi gereken içeriği doğru zamanda yeniden karşıya çıkarır.",
+    flow: [
+      {
+        step: "01",
+        title: "Çalışmayı kaydet",
+        description: "Kelime, paragraf, test veya deneme aktivitesini seç.",
+      },
+      {
+        step: "02",
+        title: "XP kazan",
+        description: "Aktivitenin değerine göre XP ve günlük hedef ilerlemesi kazan.",
+      },
+      {
+        step: "03",
+        title: "Tekrarı planla",
+        description: "Flashcard performansına göre bir sonraki çalışma zamanını belirle.",
+      },
+      {
+        step: "04",
+        title: "Gelişimi izle",
+        description: "Seviye, seri ve haftalık istatistiklerle uzun dönem ilerlemeyi gör.",
+      },
+    ],
+    engineering: [
+      {
+        title: "Tip güvenli full-stack yapı",
+        description:
+          "Next.js ve TypeScript ile arayüzden veri erişimine kadar tutarlı bir geliştirme deneyimi kuruldu.",
+      },
+      {
+        title: "İlişkisel veri modeli",
+        description:
+          "Prisma ve PostgreSQL ile kullanıcı, aktivite, XP ve tekrar kayıtları izlenebilir ilişkiler hâlinde modellendi.",
+      },
+      {
+        title: "Bulut dağıtımı",
+        description:
+          "Uygulama Vercel ve Supabase üzerinde erişilebilir, yönetilebilir bir ürün olarak yayınlandı.",
+      },
+    ],
   },
 ];
 

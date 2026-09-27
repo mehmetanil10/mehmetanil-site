@@ -76,8 +76,7 @@ export function ProjectGallery({ images, projectTitle, priority = false }: Proje
         </button>
 
         <div
-          className="mt-3 grid gap-2"
-          style={{ gridTemplateColumns: `repeat(${images.length}, minmax(0, 1fr))` }}
+          className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6"
           aria-label={`${projectTitle} görsel galerisi`}
         >
           {images.map((image, index) => (

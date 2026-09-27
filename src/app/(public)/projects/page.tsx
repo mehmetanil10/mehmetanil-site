@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
 import { ProjectGallery } from "@/components/projects/project-gallery";
 import { ProjectNetwork } from "@/components/projects/project-network";
-import { projects } from "@/lib/data";
+import { projectCaseStudies, projects } from "@/lib/data";
 import type { Project } from "@/types";
 
 export const metadata: Metadata = {
@@ -61,6 +61,8 @@ function ProjectCover({ project }: { project: Project }) {
 }
 
 export default function ProjectsPage() {
+  const detailedProjectSlugs = new Set(projectCaseStudies.map(({ slug }) => slug));
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
       <section className="relative overflow-hidden lg:min-h-[300px]">
@@ -129,6 +131,16 @@ export default function ProjectsPage() {
                     </span>
                   ))}
                 </div>
+
+                {detailedProjectSlugs.has(project.slug) ? (
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="group mt-7 inline-flex w-fit items-center gap-2 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                  >
+                    Proje detayını incele
+                    <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+                  </Link>
+                ) : null}
 
                 {(project.liveUrl || project.githubUrl) && (
                   <div className="mt-8 flex flex-wrap gap-3 border-t border-border/60 pt-6 lg:mt-auto">
