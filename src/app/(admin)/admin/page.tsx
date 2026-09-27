@@ -6,9 +6,11 @@ import {
   CheckCircle2,
   Eye,
   FileText,
+  FolderKanban,
   Inbox,
   Tag,
   Trophy,
+  Users,
 } from "lucide-react";
 import { VisitorStats } from "@/components/analytics/visitor-stats";
 import {
@@ -24,6 +26,7 @@ import {
   type DailyPageMetric,
   type DailySourceMetric,
 } from "@/components/analytics/page-analytics";
+import { projectCaseStudies, projects } from "@/lib/data";
 
 type DailyCountRow = {
   date: string;
@@ -47,6 +50,15 @@ type DailySourceMetricRow = {
   date: string;
   source: string;
   visitors: number;
+};
+
+type ProjectAnalyticsRow = {
+  path: string;
+  views: number;
+  visitors: number;
+  todayViews: number;
+  todayVisitors: number;
+  lastViewedAt: Date | null;
 };
 
 const pageLabels: Record<string, string> = {
@@ -212,9 +224,10 @@ async function getStats() {
   let dailyPageMetrics: DailyPageMetricRow[] = [];
   let dailySourceMetrics: DailySourceMetricRow[] = [];
   let lastPageView: { path: string; createdAt: Date } | null = null;
+  let projectAnalyticsRows: ProjectAnalyticsRow[] = [];
 
   try {
-    [dailyPageMetrics, dailySourceMetrics, lastPageView] = await Promise.all([
+    [dailyPageMetrics, dailySourceMetrics, lastPageView, projectAnalyticsRows] = await Promise.all([
       prisma.$queryRaw<DailyPageMetricRow[]>`
         SELECT
           "date",
@@ -238,6 +251,19 @@ async function getStats() {
         orderBy: { createdAt: "desc" },
         select: { path: true, createdAt: true },
       }),
+      prisma.$queryRaw<ProjectAnalyticsRow[]>`
+        SELECT
+          "path",
+          COUNT(*)::int AS "views",
+          COUNT(DISTINCT "visitorHash")::int AS "visitors",
+          COUNT(*) FILTER (WHERE "date" = ${dateInIstanbul()})::int AS "todayViews",
+          COUNT(DISTINCT "visitorHash") FILTER (WHERE "date" = ${dateInIstanbul()})::int AS "todayVisitors",
+          MAX("createdAt") AS "lastViewedAt"
+        FROM "PageView"
+        WHERE "path" LIKE '/projects/%'
+        GROUP BY "path"
+        ORDER BY "views" DESC
+      `,
     ]);
   } catch (error) {
     console.error("Page analytics dashboard query failed:", error);
@@ -268,6 +294,20 @@ async function getStats() {
     source: item.source,
     visitors: Number(item.visitors),
   }));
+  const projectAnalytics = projectCaseStudies.map(({ slug }) => {
+    const project = projects.find((item) => item.slug === slug);
+    const row = projectAnalyticsRows.find((item) => item.path === `/projects/${slug}`);
+
+    return {
+      slug,
+      title: project?.title ?? slug,
+      views: Number(row?.views ?? 0),
+      visitors: Number(row?.visitors ?? 0),
+      todayViews: Number(row?.todayViews ?? 0),
+      todayVisitors: Number(row?.todayVisitors ?? 0),
+      lastViewedAt: row?.lastViewedAt ? formatLastVisit(row.lastViewedAt) : null,
+    };
+  });
 
   return {
     totalPosts,
@@ -291,6 +331,7 @@ async function getStats() {
     },
     pageData,
     sourceData,
+    projectAnalytics,
     lastVisit: lastPageView
       ? {
           when: formatLastVisit(lastPageView.createdAt),
@@ -394,6 +435,57 @@ export default async function AdminDashboardPage() {
         sourceData={stats.sourceData}
         today={dateInIstanbul()}
       />
+
+      <section className="mt-6 min-w-0 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
+        <div className="flex items-center gap-2">
+          <FolderKanban size={18} className="text-primary" />
+          <h2 className="font-semibold">Proje detay görüntülemeleri</h2>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Detay sayfalarının toplam ve bugünkü ziyaret performansı
+        </p>
+
+        <div className="mt-5 grid min-w-0 gap-3 lg:grid-cols-3">
+          {stats.projectAnalytics.map((project) => (
+            <Link
+              key={project.slug}
+              href={`/projects/${project.slug}`}
+              className="group min-w-0 rounded-xl border border-border/50 bg-background/40 p-4 transition-colors hover:border-primary/40"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="line-clamp-2 min-w-0 text-sm font-semibold leading-5 group-hover:text-primary">
+                  {project.title}
+                </p>
+                <ArrowRight size={15} className="mt-0.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <div>
+                  <p className="inline-flex items-center gap-1.5 text-xl font-semibold">
+                    <Eye size={14} className="text-primary" /> {project.views}
+                  </p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">Toplam görüntüleme</p>
+                </div>
+                <div>
+                  <p className="inline-flex items-center gap-1.5 text-xl font-semibold">
+                    <Users size={14} className="text-cyan-600 dark:text-cyan-400" /> {project.visitors}
+                  </p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">Benzersiz ziyaretçi</p>
+                </div>
+              </div>
+
+              <div className="mt-4 border-t border-border/40 pt-3 text-[11px] text-muted-foreground">
+                <p>
+                  Bugün {project.todayViews} görüntüleme · {project.todayVisitors} kişi
+                </p>
+                <p className="mt-1 truncate">
+                  {project.lastViewedAt ? `Son görüntülenme: ${project.lastViewedAt}` : "Henüz görüntülenmedi"}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <CvViewChart
         data={stats.cvViewChartData}

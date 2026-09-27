@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   CheckCircle2,
   Github,
@@ -51,6 +52,9 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   if (!result) notFound();
 
   const { project, caseStudy } = result;
+  const currentIndex = projectCaseStudies.findIndex(({ slug }) => slug === params.slug);
+  const nextCaseStudy = projectCaseStudies[(currentIndex + 1) % projectCaseStudies.length];
+  const nextProject = projects.find(({ slug }) => slug === nextCaseStudy.slug);
 
   return (
     <div className="overflow-hidden">
@@ -294,6 +298,28 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
             </Link>
           </div>
         </section>
+
+        {nextProject ? (
+          <Link
+            href={`/projects/${nextProject.slug}`}
+            className="group mb-8 grid gap-7 overflow-hidden rounded-3xl border border-border/70 bg-background p-6 transition-all hover:border-primary/45 hover:bg-card/55 sm:p-9 lg:grid-cols-[1fr_auto] lg:items-end"
+          >
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                Sonraki proje
+              </p>
+              <h2 className="mt-4 max-w-3xl text-2xl font-semibold tracking-[-0.035em] transition-colors group-hover:text-primary sm:text-3xl">
+                {nextProject.title}
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                {typeLabels[nextProject.type]} · {nextProject.year}
+              </p>
+            </div>
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card text-primary transition-transform group-hover:translate-x-1">
+              <ArrowRight size={19} />
+            </span>
+          </Link>
+        ) : null}
       </div>
     </div>
   );
