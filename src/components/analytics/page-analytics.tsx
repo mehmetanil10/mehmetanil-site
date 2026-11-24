@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { BarChart3, Compass, Eye, Users } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export type DailyPageMetric = {
   date: string;
@@ -21,17 +20,7 @@ export type DailySourceMetric = {
 type PageAnalyticsProps = {
   pageData: DailyPageMetric[];
   sourceData: DailySourceMetric[];
-  today: string;
 };
-
-const ranges = [7, 30, "all"] as const;
-type Range = (typeof ranges)[number];
-
-function cutoffDate(today: string, range: Exclude<Range, "all">) {
-  const date = new Date(`${today}T12:00:00Z`);
-  date.setUTCDate(date.getUTCDate() - range + 1);
-  return date.toISOString().slice(0, 10);
-}
 
 function sourceLabel(source: string) {
   if (source === "direct") return "Doğrudan";
@@ -42,10 +31,7 @@ function sourceLabel(source: string) {
   return "Diğer";
 }
 
-export function PageAnalytics({ pageData, sourceData, today }: PageAnalyticsProps) {
-  const [range, setRange] = useState<Range>(30);
-  const cutoff = range === "all" ? null : cutoffDate(today, range);
-
+export function PageAnalytics({ pageData, sourceData }: PageAnalyticsProps) {
   const pages = useMemo(() => {
     const totals = new Map<
       string,
@@ -53,7 +39,6 @@ export function PageAnalytics({ pageData, sourceData, today }: PageAnalyticsProp
     >();
 
     for (const item of pageData) {
-      if (cutoff && item.date < cutoff) continue;
       const current = totals.get(item.path) ?? {
         path: item.path,
         label: item.label,
@@ -68,19 +53,18 @@ export function PageAnalytics({ pageData, sourceData, today }: PageAnalyticsProp
     return [...totals.values()]
       .sort((first, second) => second.views - first.views)
       .slice(0, 8);
-  }, [cutoff, pageData]);
+  }, [pageData]);
 
   const sources = useMemo(() => {
     const totals = new Map<string, number>();
     for (const item of sourceData) {
-      if (cutoff && item.date < cutoff) continue;
       totals.set(item.source, (totals.get(item.source) ?? 0) + item.visitors);
     }
 
     return [...totals.entries()]
       .map(([source, visitors]) => ({ source, visitors }))
       .sort((first, second) => second.visitors - first.visitors);
-  }, [cutoff, sourceData]);
+  }, [sourceData]);
 
   const sourceTotal = sources.reduce((sum, item) => sum + item.visitors, 0);
 
@@ -97,23 +81,6 @@ export function PageAnalytics({ pageData, sourceData, today }: PageAnalyticsProp
           </p>
         </div>
 
-        <div className="flex items-center gap-1 self-start rounded-md border border-border/50 bg-background/50 p-1">
-          {ranges.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setRange(item)}
-              className={cn(
-                "rounded px-2.5 py-1 text-xs transition-colors",
-                range === item
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {item === "all" ? "Tümü" : `${item} gün`}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
@@ -139,9 +106,9 @@ export function PageAnalytics({ pageData, sourceData, today }: PageAnalyticsProp
                       {page.path}
                     </p>
                   </div>
-                  <div className="hidden shrink-0 text-right sm:block">
+                  <div className="shrink-0 text-right">
                     <p className="inline-flex items-center gap-1 text-xs font-medium">
-                      <Eye size={12} /> {page.views}
+                      <Eye size={12} /> {page.views} görüntüleme
                     </p>
                     <p className="mt-0.5 text-[10px] text-muted-foreground">
                       {page.visitors} günlük tekil

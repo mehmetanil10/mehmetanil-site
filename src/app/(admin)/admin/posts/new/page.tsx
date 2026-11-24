@@ -1,8 +1,10 @@
+import { requireAdmin } from "@/lib/require-admin";
 import { getCategories } from "@/actions/category-actions";
 import { createPost } from "@/actions/post-actions";
 import { PostForm } from "@/components/admin/post-form";
 
 export default async function NewPostPage() {
+  const session = await requireAdmin();
   const categories = await getCategories();
 
   return (
@@ -11,7 +13,7 @@ export default async function NewPostPage() {
       <PostForm
         categories={categories}
         action={createPost}
-        submitLabel="Yayınla"
+        draftKey={`post-draft:${session.user?.email}:new`}
       />
     </div>
   );

@@ -15,6 +15,16 @@ export async function markAsRead(id: string) {
   revalidatePath("/admin");
 }
 
+export async function setMessageReplied(id: string, replied: boolean) {
+  await requireAdmin();
+  await prisma.contactMessage.update({
+    where: { id },
+    data: { isReplied: replied, ...(replied && { isRead: true }) },
+  });
+  revalidatePath("/admin/messages");
+  revalidatePath("/admin");
+}
+
 export async function deleteMessage(id: string) {
   await requireAdmin();
 

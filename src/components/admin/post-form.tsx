@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import { useRouter } from "next/navigation";
+import { emptyPost, usePostDraft, type PostFields } from "./use-post-draft";
 import { slugify } from "@/lib/utils";
 import type { Category } from "@prisma/client";
 import {
@@ -25,42 +27,37 @@ import {
   Loader2,
 } from "lucide-react";
 
-type PostFormData = {
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  coverImage: string;
-  categoryId: string;
-  status: "DRAFT" | "PUBLISHED";
-  seoTitle: string;
-  seoDescription: string;
-};
-
 type Props = {
-  defaultValues?: Partial<PostFormData>;
+  defaultValues?: PostFields;
+  draftKey: string;
+  revision?: string;
   categories: Category[];
-  action: (formData: FormData) => Promise<void>;
-  submitLabel?: string;
+  action: (formData: FormData) => Promise<string | undefined>;
 };
 
 export function PostForm({
-  defaultValues,
+  defaultValues = emptyPost,
+  draftKey,
+  revision = "",
   categories,
   action,
-  submitLabel = "Kaydet",
 }: Props) {
   const [preview, setPreview] = useState(false);
-  const [title, setTitle] = useState(defaultValues?.title ?? "");
-  const [slug, setSlug] = useState(defaultValues?.slug ?? "");
-  const [content, setContent] = useState(defaultValues?.content ?? "");
-  const [slugEdited, setSlugEdited] = useState(!!defaultValues?.slug);
-  const [coverImage, setCoverImage] = useState(defaultValues?.coverImage ?? "");
-  const [seoTitle, setSeoTitle] = useState(defaultValues?.seoTitle ?? "");
-  const [seoDesc, setSeoDesc] = useState(defaultValues?.seoDescription ?? "");
-  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(
-    defaultValues?.status ?? "DRAFT",
-  );
+  const router = useRouter();
+  const { values, setValues, notice, ready, clearDraft } = usePostDraft(draftKey, revision, defaultValues);
+  const { title, slug, content, coverImage, seoTitle, seoDescription: seoDesc, status } = values;
+  const slugEdited = useRef(!!defaultValues.slug);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const isPublished = defaultValues.status === "PUBLISHED";
+  const submitLabel = status === "PUBLISHED"
+    ? (isPublished ? "Değişiklikleri yayımla" : "Yayımla")
+    : (isPublished ? "Yayından kaldır" : "Taslağı kaydet");
+
+  function setField<K extends keyof PostFields>(field: K, value: PostFields[K]) {
+    setValues((current) => ({ ...current, [field]: value }));
+  }
+
   const [imgError, setImgError] = useState(false);
   const [showImageTool, setShowImageTool] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
@@ -86,7 +83,7 @@ export function PostForm({
     const selectionStart = start + before.length;
     const selectionEnd = selectionStart + selected.length;
 
-    setContent(nextContent);
+    setField("content", nextContent);
     requestAnimationFrame(() => {
       textarea.focus();
       textarea.setSelectionRange(selectionStart, selectionEnd);
@@ -107,7 +104,7 @@ export function PostForm({
       )
       .join("\n");
 
-    setContent(`${content.slice(0, start)}${prefixed}${content.slice(end)}`);
+    setField("content", `${content.slice(0, start)}${prefixed}${content.slice(end)}`);
     requestAnimationFrame(() => {
       textarea.focus();
       textarea.setSelectionRange(start, start + prefixed.length);
@@ -168,7 +165,7 @@ export function PostForm({
     setCoverUploadError("");
     setUploadingCoverImage(true);
     try {
-      setCoverImage(await uploadImage(file));
+      setField("coverImage", await uploadImage(file));
     } catch (error) {
       setCoverUploadError(
         error instanceof Error ? error.message : "Kapak görseli yüklenemedi.",
@@ -179,10 +176,6 @@ export function PostForm({
   };
 
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0;
-
-  useEffect(() => {
-    if (!slugEdited && title) setSlug(slugify(title));
-  }, [title, slugEdited]);
 
   useEffect(() => {
     setImgError(false);
@@ -196,7 +189,31 @@ export function PostForm({
     "rounded-lg border border-border/50 bg-card p-5 space-y-4";
 
   return (
-    <form action={action}>
+    <form onSubmit={async (event) => {
+      event.preventDefault();
+      if (submitting || !ready) return;
+      const data = new FormData(event.currentTarget);
+      setSubmitting(true);
+      setSubmitError("");
+      try {
+        const error = await action(data);
+        if (error) {
+          setSubmitError(error);
+          setSubmitting(false);
+          return;
+        }
+        clearDraft();
+        router.push("/admin/posts");
+        router.refresh();
+      } catch {
+        setSubmitError("Yazı kaydedilemedi. Bağlantıyı kontrol edip yeniden deneyin.");
+        setSubmitting(false);
+      }
+    }}>
+      <p role="status" className="mb-3 text-xs text-muted-foreground">
+        {notice || "Otomatik taslak bu tarayıcıda saklanır."}
+      </p>
+      <fieldset disabled={!ready || submitting} className="min-w-0">
       <div className="flex flex-col xl:flex-row gap-6">
         {/* ── Sol: Ana içerik ── */}
         <div className="flex-1 min-w-0 space-y-5">
@@ -207,7 +224,11 @@ export function PostForm({
               <input
                 name="title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  const nextTitle = e.target.value;
+                  const autoSlug = !slugEdited.current && (!slug || slug === slugify(title));
+                  setValues((current) => ({ ...current, title: nextTitle, slug: autoSlug ? slugify(nextTitle) : current.slug }));
+                }}
                 placeholder="Yazı başlığı"
                 className={`${inputClass} text-base font-medium`}
                 required
@@ -223,8 +244,8 @@ export function PostForm({
                   name="slug"
                   value={slug}
                   onChange={(e) => {
-                    setSlug(e.target.value);
-                    setSlugEdited(true);
+                    setField("slug", e.target.value);
+                    slugEdited.current = true;
                   }}
                   placeholder="yazi-slug"
                   className={`${inputClass} font-mono text-xs`}
@@ -236,7 +257,8 @@ export function PostForm({
               <label className={labelClass}>Özet</label>
               <textarea
                 name="excerpt"
-                defaultValue={defaultValues?.excerpt ?? ""}
+                value={values.excerpt}
+                onChange={(event) => setField("excerpt", event.target.value)}
                 placeholder="Okuyucunun dikkatini çekecek kısa bir özet..."
                 rows={2}
                 className={`${inputClass} resize-none`}
@@ -436,7 +458,7 @@ export function PostForm({
                 ref={contentRef}
                 name="content"
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => setField("content", e.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Tab") {
                     event.preventDefault();
@@ -504,7 +526,8 @@ export function PostForm({
                   <button
                     key={s}
                     type="button"
-                    onClick={() => setStatus(s)}
+                    aria-pressed={status === s}
+                    onClick={() => setField("status", s)}
                     className={`flex-1 rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
                       status === s
                         ? s === "PUBLISHED"
@@ -513,7 +536,7 @@ export function PostForm({
                         : "border-border/40 text-muted-foreground hover:border-border hover:text-foreground"
                     }`}
                   >
-                    {s === "DRAFT" ? "Taslak" : "Yayınla"}
+                    {s === "DRAFT" ? (isPublished ? "Yayından kaldır" : "Taslak") : "Yayımla"}
                   </button>
                 ))}
               </div>
@@ -521,18 +544,19 @@ export function PostForm({
               <input type="hidden" name="status" value={status} />
             </div>
 
+            {submitError && <p role="alert" className="text-sm text-red-600">{submitError}</p>}
             <div className="flex justify-between gap-3 pt-2 border-t border-border/30">
               <a
                 href="/admin/posts"
                 className="flex-1 text-center rounded-md border border-border/50 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:border-border transition-colors"
               >
-                İptal
+                Yazılara dön
               </a>
               <button
                 type="submit"
                 className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
               >
-                {submitLabel}
+                {submitting ? "Kaydediliyor…" : submitLabel}
               </button>
             </div>
           </div>
@@ -547,7 +571,8 @@ export function PostForm({
             </div>
             <select
               name="categoryId"
-              defaultValue={defaultValues?.categoryId ?? ""}
+              value={values.categoryId}
+                onChange={(event) => setField("categoryId", event.target.value)}
               className={inputClass}
             >
               <option value="">Seçilmedi</option>
@@ -570,7 +595,7 @@ export function PostForm({
             <input
               name="coverImage"
               value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
+              onChange={(e) => setField("coverImage", e.target.value)}
               placeholder="https://..."
               className={`${inputClass} font-mono text-xs`}
             />
@@ -644,7 +669,7 @@ export function PostForm({
               <input
                 name="seoTitle"
                 value={seoTitle}
-                onChange={(e) => setSeoTitle(e.target.value)}
+                onChange={(e) => setField("seoTitle", e.target.value)}
                 placeholder="SEO başlığı"
                 className={inputClass}
                 maxLength={60}
@@ -665,7 +690,7 @@ export function PostForm({
               <textarea
                 name="seoDescription"
                 value={seoDesc}
-                onChange={(e) => setSeoDesc(e.target.value)}
+                onChange={(e) => setField("seoDescription", e.target.value)}
                 placeholder="Arama motorlarında görünecek açıklama"
                 rows={3}
                 className={`${inputClass} resize-none`}
@@ -695,6 +720,7 @@ export function PostForm({
           </div>
         </div>
       </div>
+      </fieldset>
     </form>
   );
 }

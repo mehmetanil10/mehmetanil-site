@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/require-admin";
 import { slugify } from "@/lib/utils";
@@ -27,17 +26,15 @@ function parsePostForm(formData: FormData, fallbackContent = "") {
     seoDescription: getFormString(formData, "seoDescription"),
   });
 
-  if (!result.success) {
-    throw new Error(result.error.issues[0]?.message ?? "Geçersiz yazı verisi.");
-  }
-
-  return result.data;
+  return result;
 }
 
 export async function createPost(formData: FormData) {
   await requireAdmin();
 
-  const data = parsePostForm(formData);
+  const parsed = parsePostForm(formData);
+  if (!parsed.success) return parsed.error.issues[0].message;
+  const data = parsed.data;
 
   const adminUser = await prisma.user.findFirst();
   if (!adminUser) throw new Error("Admin kullanıcı bulunamadı.");
@@ -60,19 +57,21 @@ export async function createPost(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin/posts");
-  redirect("/admin/posts");
+  return undefined;
 }
 
-export async function updatePost(id: string, formData: FormData) {
+export async function updatePost(id: string, revision: string, formData: FormData) {
   await requireAdmin();
 
   const existing = await prisma.post.findUnique({ where: { id } });
   if (!existing) throw new Error("Yazı bulunamadı.");
 
-  const data = parsePostForm(formData, existing.content);
+  const parsed = parsePostForm(formData, existing.content);
+  if (!parsed.success) return parsed.error.issues[0].message;
+  const data = parsed.data;
 
-  await prisma.post.update({
-    where: { id },
+  const updated = await prisma.post.updateMany({
+    where: { id, updatedAt: new Date(revision) },
     data: {
       title: data.title,
       slug: data.slug,
@@ -88,11 +87,13 @@ export async function updatePost(id: string, formData: FormData) {
     },
   });
 
+  if (!updated.count) return "Bu yazı başka bir oturumda değişti. Metninizi kopyalayıp güncel yazıyı açın.";
+
   revalidatePath("/blog");
   revalidatePath(`/blog/${existing.slug}`);
   revalidatePath(`/blog/${data.slug}`);
   revalidatePath("/admin/posts");
-  redirect("/admin/posts");
+  return undefined;
 }
 
 export async function deletePost(id: string) {

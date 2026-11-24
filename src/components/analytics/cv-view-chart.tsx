@@ -1,8 +1,4 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import { FileText } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export type DailyCvViewPoint = {
   date: string;
@@ -18,9 +14,6 @@ type CvViewChartProps = {
   totalEn: number;
 };
 
-const ranges = [7, 14, 30, "all"] as const;
-type ChartRange = (typeof ranges)[number];
-
 function formatDate(date: string, withMonth = false) {
   const [, month, day] = date.split("-");
   return withMonth ? `${day}.${month}` : day;
@@ -33,25 +26,19 @@ export function CvViewChart({
   totalTr,
   totalEn,
 }: CvViewChartProps) {
-  const [range, setRange] = useState<ChartRange>(14);
-  const visibleData = useMemo(
-    () => (range === "all" ? data : data.slice(-range)),
-    [data, range],
-  );
-  const dailyTotals = visibleData.map((item) => item.tr + item.en);
+  const dailyTotals = data.map((item) => item.tr + item.en);
   const maxCount = Math.max(1, ...dailyTotals);
-  const periodTotal = dailyTotals.reduce((sum, count) => sum + count, 0);
-  const labelStep = Math.max(1, Math.ceil(visibleData.length / 8));
+  const labelStep = Math.max(1, Math.ceil(data.length / 8));
   const chartMinWidth =
-    range === "all" && visibleData.length > 30
-      ? `${visibleData.length * 18}px`
+    data.length > 30
+      ? `${data.length * 18}px`
       : "100%";
 
   const summaryCards = [
     { label: "Bugün", value: today, tone: "text-primary" },
-    { label: "Tüm zamanlar", value: total, tone: "text-foreground" },
+    { label: "Dönem toplamı", value: total, tone: "text-foreground" },
     { label: "Türkçe CV", value: totalTr, tone: "text-blue-600 dark:text-blue-400" },
-    { label: "English CV", value: totalEn, tone: "text-orange-600 dark:text-orange-400" },
+    { label: "İngilizce CV", value: totalEn, tone: "text-orange-600 dark:text-orange-400" },
   ];
 
   return (
@@ -67,23 +54,6 @@ export function CvViewChart({
           </p>
         </div>
 
-        <div className="flex items-center gap-1 self-start rounded-md border border-border/50 bg-background/50 p-1">
-          {ranges.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setRange(item)}
-              className={cn(
-                "rounded px-2.5 py-1 text-xs transition-colors",
-                range === item
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {item === "all" ? "Tümü" : `${item} gün`}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -104,9 +74,7 @@ export function CvViewChart({
             <span className="h-2 w-2 rounded-sm bg-orange-500" /> EN
           </span>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Dönem toplamı: <strong className="font-medium text-foreground">{periodTotal}</strong>
-        </p>
+
       </div>
 
       <div className="mt-6 overflow-x-auto pb-2">
@@ -114,13 +82,13 @@ export function CvViewChart({
           className="flex h-64 items-end gap-1.5 sm:gap-2"
           style={{ minWidth: chartMinWidth }}
           role="img"
-          aria-label={`CV görüntülemeleri: ${range === "all" ? "tüm zamanlar" : `son ${range} gün`}`}
+          aria-label="Seçili dönemde günlük CV görüntülemeleri"
         >
-          {visibleData.map((item, index) => {
+          {data.map((item, index) => {
             const totalForDay = item.tr + item.en;
             const height = totalForDay === 0 ? 2 : Math.max(8, (totalForDay / maxCount) * 100);
             const showLabel =
-              index === 0 || index === visibleData.length - 1 || index % labelStep === 0;
+              index === 0 || index === data.length - 1 || index % labelStep === 0;
 
             return (
               <div key={item.date} className="flex h-full min-w-0 flex-1 flex-col justify-end">
@@ -145,7 +113,7 @@ export function CvViewChart({
                   </div>
                 </div>
                 <span className="mt-2 h-4 text-center text-[10px] text-muted-foreground">
-                  {showLabel ? formatDate(item.date, visibleData.length > 14) : ""}
+                  {showLabel ? formatDate(item.date, data.length > 14) : ""}
                 </span>
               </div>
             );

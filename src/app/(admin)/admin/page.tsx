@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import {
   ArrowRight,
@@ -121,17 +122,11 @@ function formatLastVisit(date: Date) {
   }).format(date);
 }
 
-function fillDailySeries(rows: DailyCountRow[]): DailyVisitorPoint[] {
+function fillDailySeries(rows: DailyCountRow[], since: string | null, today: string): DailyVisitorPoint[] {
   const counts = new Map(rows.map((item) => [item.date, Number(item.count)]));
-  const defaultStart = dateInIstanbul(29);
-  const firstRecordedDate = rows[0]?.date;
-  const startDate =
-    firstRecordedDate && firstRecordedDate < defaultStart
-      ? firstRecordedDate
-      : defaultStart;
-  const endDate = dateInIstanbul();
+  const startDate = since ?? rows[0]?.date ?? today;
   const cursor = new Date(`${startDate}T12:00:00Z`);
-  const end = new Date(`${endDate}T12:00:00Z`);
+  const end = new Date(`${today}T12:00:00Z`);
   const result: DailyVisitorPoint[] = [];
 
   while (cursor <= end) {
@@ -143,7 +138,7 @@ function fillDailySeries(rows: DailyCountRow[]): DailyVisitorPoint[] {
   return result;
 }
 
-function fillDailyCvSeries(rows: DailyCvCountRow[]): DailyCvViewPoint[] {
+function fillDailyCvSeries(rows: DailyCvCountRow[], since: string | null, today: string): DailyCvViewPoint[] {
   const counts = new Map<string, { tr: number; en: number }>();
 
   for (const row of rows) {
@@ -153,15 +148,9 @@ function fillDailyCvSeries(rows: DailyCvCountRow[]): DailyCvViewPoint[] {
     counts.set(row.date, current);
   }
 
-  const defaultStart = dateInIstanbul(29);
-  const firstRecordedDate = rows[0]?.date;
-  const startDate =
-    firstRecordedDate && firstRecordedDate < defaultStart
-      ? firstRecordedDate
-      : defaultStart;
-  const endDate = dateInIstanbul();
+  const startDate = since ?? rows[0]?.date ?? today;
   const cursor = new Date(`${startDate}T12:00:00Z`);
-  const end = new Date(`${endDate}T12:00:00Z`);
+  const end = new Date(`${today}T12:00:00Z`);
   const result: DailyCvViewPoint[] = [];
 
   while (cursor <= end) {
@@ -174,7 +163,11 @@ function fillDailyCvSeries(rows: DailyCvCountRow[]): DailyCvViewPoint[] {
   return result;
 }
 
-async function getStats() {
+const periods = { "7": "Son 7 gün", "14": "Son 14 gün", "30": "Son 30 gün", all: "Tümü" } as const;
+
+async function getStats(since: string | null, today: string) {
+  const fromInstant = since ? new Date(`${since}T00:00:00+03:00`) : undefined;
+  const dailyFilter = since ? Prisma.sql`WHERE "date" >= ${since}` : Prisma.empty;
   const [
     totalPosts,
     published,
@@ -192,19 +185,22 @@ async function getStats() {
     prisma.category.count(),
     prisma.contactMessage.count({ where: { isRead: false } }),
     prisma.dailyVisitor.groupBy({
+      where: since ? { date: { gte: since } } : undefined,
       by: ["date"],
       _count: { _all: true },
       orderBy: { date: "asc" },
     }),
     prisma.$queryRaw<DailyCountRow[]>`
       SELECT
-        TO_CHAR("createdAt" AT TIME ZONE 'Europe/Istanbul', 'YYYY-MM-DD') AS date,
+        TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'Europe/Istanbul', 'YYYY-MM-DD') AS date,
         COUNT(*)::int AS count
       FROM "PostView"
+      ${fromInstant ? Prisma.sql`WHERE "createdAt" >= ${fromInstant}` : Prisma.empty}
       GROUP BY 1
       ORDER BY 1 ASC
     `,
     prisma.cvView.groupBy({
+      where: since ? { date: { gte: since } } : undefined,
       by: ["date", "language"],
       _count: { _all: true },
       orderBy: { date: "asc" },
@@ -215,9 +211,9 @@ async function getStats() {
         id: true,
         title: true,
         slug: true,
-        _count: { select: { views: true } },
+        _count: { select: { views: { where: { createdAt: { gte: fromInstant } } } } },
       },
-      orderBy: { views: { _count: "desc" } },
+      orderBy: { title: "asc" },
     }),
   ]);
 
@@ -235,6 +231,7 @@ async function getStats() {
           COUNT(*)::int AS views,
           COUNT(DISTINCT "visitorHash")::int AS visitors
         FROM "PageView"
+        ${dailyFilter}
         GROUP BY "date", "path"
         ORDER BY "date" ASC, views DESC
       `,
@@ -244,6 +241,7 @@ async function getStats() {
           "source",
           COUNT(DISTINCT "visitorHash")::int AS visitors
         FROM "PageView"
+        ${dailyFilter}
         GROUP BY "date", "source"
         ORDER BY "date" ASC, visitors DESC
       `,
@@ -256,11 +254,12 @@ async function getStats() {
           "path",
           COUNT(*)::int AS "views",
           COUNT(DISTINCT "visitorHash")::int AS "visitors",
-          COUNT(*) FILTER (WHERE "date" = ${dateInIstanbul()})::int AS "todayViews",
-          COUNT(DISTINCT "visitorHash") FILTER (WHERE "date" = ${dateInIstanbul()})::int AS "todayVisitors",
+          COUNT(*) FILTER (WHERE "date" = ${today})::int AS "todayViews",
+          COUNT(DISTINCT "visitorHash") FILTER (WHERE "date" = ${today})::int AS "todayVisitors",
           MAX("createdAt") AS "lastViewedAt"
         FROM "PageView"
         WHERE "path" LIKE '/projects/%'
+        ${since ? Prisma.sql`AND "date" >= ${since}` : Prisma.empty}
         GROUP BY "path"
         ORDER BY "views" DESC
       `,
@@ -274,7 +273,7 @@ async function getStats() {
     language: item.language,
     count: item._count._all,
   }));
-  const cvViewChartData = fillDailyCvSeries(cvViewRows);
+  const cvViewChartData = fillDailyCvSeries(cvViewRows, since, today);
   const totalTr = cvViewRows
     .filter((item) => item.language === "TR")
     .reduce((sum, item) => sum + item.count, 0);
@@ -319,9 +318,9 @@ async function getStats() {
       dailyVisitors.map((item) => ({
         date: item.date,
         count: item._count._all,
-      })),
+      })), since, today,
     ),
-    postViewChartData: fillDailySeries(dailyPostViews),
+    postViewChartData: fillDailySeries(dailyPostViews, since, today),
     cvViewChartData,
     cvViews: {
       today: (todayCv?.tr ?? 0) + (todayCv?.en ?? 0),
@@ -338,12 +337,17 @@ async function getStats() {
           page: getPageLabel(lastPageView.path, postsWithViews),
         }
       : null,
-    popularPosts: postsWithViews.slice(0, 5),
+    popularPosts: postsWithViews.filter((post) => post._count.views > 0)
+      .sort((a, b) => b._count.views - a._count.views).slice(0, 5),
   };
 }
 
-export default async function AdminDashboardPage() {
-  const stats = await getStats();
+export default async function AdminDashboardPage({ searchParams }: { searchParams: { donem?: string } }) {
+  const selected = searchParams.donem;
+  const period = selected === "14" || selected === "30" || selected === "all" ? selected : "7";
+  const today = dateInIstanbul();
+  const since = period === "all" ? null : dateInIstanbul(Number(period) - 1);
+  const stats = await getStats(since, today);
 
   const cards = [
     { label: "Toplam yazı", value: stats.totalPosts, icon: FileText, color: "text-blue-600 dark:text-blue-400" },
@@ -352,7 +356,6 @@ export default async function AdminDashboardPage() {
     { label: "Kategori", value: stats.categories, icon: Tag, color: "text-purple-600 dark:text-purple-400" },
   ];
   const todayVisitors = stats.visitorChartData.at(-1)?.count ?? 0;
-  const today = dateInIstanbul();
 
   return (
     <div className="min-w-0 max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
@@ -394,7 +397,7 @@ export default async function AdminDashboardPage() {
               <p className="mt-1.5 text-xs text-muted-foreground">
                 {stats.messages > 0
                   ? "Yeni mesajları görüntülemek için açın."
-                  : "Şu anda ilgilenmeniz gereken yeni mesaj yok."}
+                  : "Gelen kutusunu açın."}
               </p>
             </div>
           </div>
@@ -403,6 +406,16 @@ export default async function AdminDashboardPage() {
         <VisitorStats variant="cards" lastVisit={stats.lastVisit} />
       </div>
 
+      <nav aria-label="Analiz dönemi" className="mt-6 flex flex-wrap items-center gap-2">
+        <span className="mr-2 text-sm font-medium">Analiz dönemi</span>
+        {Object.entries(periods).map(([key, label]) => (
+          <Link key={key} href={`/admin?donem=${key}`} scroll={false} prefetch={false}
+            aria-current={period === key ? "page" : undefined}
+            className={`rounded-md px-3 py-2 text-xs ${period === key ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
+            {label}
+          </Link>
+        ))}
+      </nav>
       <VisitorChart data={stats.visitorChartData} today={today} />
 
       {/* İkincil içerik istatistikleri */}
@@ -433,7 +446,6 @@ export default async function AdminDashboardPage() {
       <PageAnalytics
         pageData={stats.pageData}
         sourceData={stats.sourceData}
-        today={today}
       />
 
       <section className="mt-6 min-w-0 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
@@ -442,7 +454,7 @@ export default async function AdminDashboardPage() {
           <h2 className="font-semibold">Proje detay görüntülemeleri</h2>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          Detay sayfalarının toplam ve bugünkü ziyaret performansı
+          Seçili dönemde proje detay sayfalarına gelen ziyaretler
         </p>
 
         <div className="mt-5 grid min-w-0 gap-3 lg:grid-cols-3">
@@ -464,7 +476,7 @@ export default async function AdminDashboardPage() {
                   <p className="inline-flex items-center gap-1.5 text-xl font-semibold">
                     <Eye size={14} className="text-primary" /> {project.views}
                   </p>
-                  <p className="mt-1 text-[10px] text-muted-foreground">Toplam görüntüleme</p>
+                  <p className="mt-1 text-[10px] text-muted-foreground">Dönem görüntülemesi</p>
                 </div>
                 <div>
                   <p className="inline-flex items-center gap-1.5 text-xl font-semibold">
@@ -502,7 +514,7 @@ export default async function AdminDashboardPage() {
             <h2 className="font-semibold">En çok okunan blog yazıları</h2>
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Tüm zamanların benzersiz görüntüleme sıralaması
+            Seçili dönemin benzersiz görüntüleme sıralaması
           </p>
 
           <div className="mt-5 divide-y divide-border/30">
@@ -540,7 +552,6 @@ export default async function AdminDashboardPage() {
         <VisitorChart
           data={stats.postViewChartData}
           today={today}
-          initialRange={14}
           totalLabel="Dönem toplamı"
           title="Günlük blog görüntülemeleri"
           description="Yazıların benzersiz görüntülenme sayısının günlere göre dağılımı"

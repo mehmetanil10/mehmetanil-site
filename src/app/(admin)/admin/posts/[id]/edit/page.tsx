@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/require-admin";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getCategories } from "@/actions/category-actions";
@@ -9,6 +10,7 @@ export default async function EditPostPage({
 }: {
   params: { id: string };
 }) {
+  const session = await requireAdmin();
   const [post, categories] = await Promise.all([
     prisma.post.findUnique({
       where: { id: params.id },
@@ -37,8 +39,10 @@ export default async function EditPostPage({
       <PostForm
         defaultValues={defaultValues}
         categories={categories}
-        action={updatePost.bind(null, post.id)}
-        submitLabel="Güncelle"
+        action={updatePost.bind(null, post.id, post.updatedAt.toISOString())}
+        draftKey={`post-draft:${session.user?.email}:${post.id}`}
+        revision={post.updatedAt.toISOString()}
+        key={`${post.id}:${post.updatedAt.toISOString()}`}
       />
     </div>
   );

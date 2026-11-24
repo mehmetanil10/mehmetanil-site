@@ -1,6 +1,3 @@
-"use client";
-
-import { useMemo, useState } from "react";
 import { BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,15 +9,11 @@ export type DailyVisitorPoint = {
 type VisitorChartProps = {
   data: DailyVisitorPoint[];
   today: string;
-  initialRange?: ChartRange;
   totalLabel?: string;
   title?: string;
   description?: string;
   valueLabel?: string;
 };
-
-const ranges = [7, 14, 30, "all"] as const;
-type ChartRange = (typeof ranges)[number];
 
 const shortDate = new Intl.DateTimeFormat("tr-TR", {
   day: "numeric",
@@ -33,24 +26,18 @@ const mean = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumF
 export function VisitorChart({
   data,
   today,
-  initialRange = 7,
   totalLabel = "Günlük sayıların toplamı",
   title = "Günlük ziyaretçiler",
   description = "Benzersiz ziyaretçi sayısının günlere göre dağılımı",
   valueLabel = "ziyaretçi",
 }: VisitorChartProps) {
-  const [range, setRange] = useState<ChartRange>(initialRange);
-  const visibleData = useMemo(
-    () => (range === "all" ? data : data.slice(-range)),
-    [data, range],
-  );
-  const peakDay = visibleData.reduce<DailyVisitorPoint | undefined>(
+  const peakDay = data.reduce<DailyVisitorPoint | undefined>(
     (peak, day) => day.count > 0 && (!peak || day.count >= peak.count) ? day : peak,
     undefined,
   );
-  const total = visibleData.reduce((sum, item) => sum + item.count, 0);
-  const average = visibleData.length ? total / visibleData.length : 0;
-  const spansYears = visibleData[0]?.date.slice(0, 4) !== visibleData.at(-1)?.date.slice(0, 4);
+  const total = data.reduce((sum, item) => sum + item.count, 0);
+  const average = data.length ? total / data.length : 0;
+  const spansYears = data[0]?.date.slice(0, 4) !== data.at(-1)?.date.slice(0, 4);
   function formatDate(date: string) {
     const label = shortDate.format(new Date(`${date}T12:00:00Z`));
     return spansYears ? `${label} ${date.slice(0, 4)}` : label;
@@ -67,24 +54,6 @@ export function VisitorChart({
           <p className="mt-1 text-xs text-muted-foreground">{description}</p>
         </div>
 
-        <div className="grid w-full grid-cols-2 gap-1 self-start rounded-md border border-border/50 bg-background/50 p-1 sm:flex sm:w-auto sm:items-center">
-          {ranges.map((item) => (
-            <button
-              key={item}
-              type="button"
-              aria-pressed={range === item}
-              onClick={() => setRange(item)}
-              className={cn(
-                "whitespace-nowrap rounded px-2.5 py-1 text-xs transition-colors",
-                range === item
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {item === "all" ? "Tümü" : `${item} gün`}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 border-b border-border/30 pb-5 sm:flex sm:gap-8">
@@ -106,7 +75,7 @@ export function VisitorChart({
 
       <div className="mt-5 max-h-96 overflow-auto pb-2 sm:max-h-none">
         <ul aria-label={title} className="flex flex-col-reverse gap-1 sm:w-max sm:min-w-full sm:flex-row sm:gap-2">
-          {visibleData.map(({ date, count }) => {
+          {data.map(({ date, count }) => {
             const isToday = date === today;
             const size = `${peakDay ? (count / peakDay.count) * 100 : 0}%`;
             return (

@@ -1,14 +1,20 @@
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
-import { markAsRead } from "@/actions/message-actions";
+import Link from "next/link";
+import { markAsRead, setMessageReplied } from "@/actions/message-actions";
 import { Mail, MailOpen } from "lucide-react";
 
-export default async function AdminMessagesPage() {
+const filters = { all: "Tümü", waiting: "Yanıt bekliyor", replied: "Yanıtlandı" } as const;
+
+export default async function AdminMessagesPage({ searchParams }: { searchParams: { durum?: string } }) {
+  const filter = searchParams.durum === "waiting" || searchParams.durum === "replied" ? searchParams.durum : "all";
   const messages = await prisma.contactMessage.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   const unreadCount = messages.filter((m) => !m.isRead).length;
+
+  const visibleMessages = messages.filter((msg) => filter === "all" || msg.isReplied === (filter === "replied"));
 
   return (
     <div className="min-w-0 p-4 sm:p-6 lg:p-8">
@@ -21,13 +27,22 @@ export default async function AdminMessagesPage() {
         )}
       </div>
 
+      <nav aria-label="Yanıt durumu" className="mb-5 flex flex-wrap gap-2">
+        {Object.entries(filters).map(([key, label]) => (
+          <Link key={key} href={key === "all" ? "/admin/messages" : `/admin/messages?durum=${key}`}
+            aria-current={filter === key ? "page" : undefined}
+            className={`rounded-md px-3 py-2 text-xs ${filter === key ? "bg-primary text-primary-foreground" : "bg-secondary"}`}>
+            {label}
+          </Link>
+        ))}
+      </nav>
       <div className="space-y-3">
-        {messages.length === 0 ? (
+        {visibleMessages.length === 0 ? (
           <div className="rounded-lg border border-border/50 bg-card p-10 text-center">
-            <p className="text-sm text-muted-foreground">Henüz mesaj yok.</p>
+            <p className="text-sm text-muted-foreground">{filter === "all" ? "Henüz mesaj yok." : "Bu durumda mesaj yok."}</p>
           </div>
         ) : (
-          messages.map((msg) => (
+          visibleMessages.map((msg) => (
             <div
               key={msg.id}
               className={`min-w-0 overflow-hidden rounded-lg border bg-card p-4 transition-colors sm:p-5 ${
@@ -49,6 +64,7 @@ export default async function AdminMessagesPage() {
                     <div className="mb-2 min-w-0">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                         <span className="text-sm font-medium">{msg.name}</span>
+                        <span className="rounded-full bg-secondary px-2 py-1 text-[11px]">{msg.isReplied ? "Yanıtlandı" : "Yanıt bekliyor"}</span>
                         {!msg.isRead ? (
                           <span className="rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-primary">
                             Yeni
@@ -78,6 +94,15 @@ export default async function AdminMessagesPage() {
                   <span className="font-mono text-xs text-muted-foreground">
                     {formatDate(msg.createdAt)}
                   </span>
+                  <a href={`mailto:${encodeURIComponent(msg.email).replace("%40", "@")}?subject=${encodeURIComponent("Re: " + (msg.subject || "İletişim mesajınız"))}`}
+                    className="rounded-md bg-primary px-3 py-2 text-center text-xs font-medium text-primary-foreground">
+                    Yanıtla
+                  </a>
+                  <form action={setMessageReplied.bind(null, msg.id, !msg.isReplied)}>
+                    <button type="submit" className="w-full rounded-md border px-3 py-2 text-xs">
+                      {msg.isReplied ? "Yanıt bekliyor olarak işaretle" : "Yanıtlandı olarak işaretle"}
+                    </button>
+                  </form>
                   {!msg.isRead && (
                     <form
                       action={async () => {

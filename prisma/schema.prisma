@@ -94,6 +94,7 @@ model ContactMessage {
   message   String   @db.Text
   ipHash    String?  @db.VarChar(64)
   isRead    Boolean  @default(false)
+  isReplied Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([ipHash, createdAt])
