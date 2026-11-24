@@ -1,9 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { emptyPost, usePostDraft, type PostFields } from "./use-post-draft";
 import { slugify } from "@/lib/utils";
@@ -26,6 +23,8 @@ import {
   UploadCloud,
   Loader2,
 } from "lucide-react";
+
+const PostMarkdownPreview = lazy(() => import("./post-markdown-preview"));
 
 type Props = {
   defaultValues?: PostFields;
@@ -429,29 +428,9 @@ export function PostForm({
 
             {preview ? (
               <div className="min-h-[420px] rounded-md border border-border/50 bg-secondary/20 px-5 py-4 text-sm leading-relaxed overflow-auto">
-                {content ? (
-                  <div className="prose prose-sm max-w-none dark:prose-invert prose-a:text-primary prose-img:rounded-lg prose-img:border prose-img:border-border/50 prose-pre:bg-background">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm, remarkBreaks]}
-                      components={{
-                        img: ({ src, alt }) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={src}
-                            alt={alt ?? ""}
-                            className="my-4 w-full rounded-lg border border-border/50 object-cover"
-                          />
-                        ),
-                      }}
-                    >
-                      {content}
-                    </ReactMarkdown>
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground italic">
-                    Önizlenecek içerik yok.
-                  </p>
-                )}
+                <Suspense fallback={<p role="status" className="text-muted-foreground">Önizleme yükleniyor…</p>}>
+                  <PostMarkdownPreview content={content} />
+                </Suspense>
               </div>
             ) : (
               <textarea
