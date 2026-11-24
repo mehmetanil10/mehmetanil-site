@@ -352,6 +352,7 @@ export default async function AdminDashboardPage() {
     { label: "Kategori", value: stats.categories, icon: Tag, color: "text-purple-600 dark:text-purple-400" },
   ];
   const todayVisitors = stats.visitorChartData.at(-1)?.count ?? 0;
+  const today = dateInIstanbul();
 
   return (
     <div className="min-w-0 max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
@@ -402,6 +403,8 @@ export default async function AdminDashboardPage() {
         <VisitorStats variant="cards" lastVisit={stats.lastVisit} />
       </div>
 
+      <VisitorChart data={stats.visitorChartData} today={today} />
+
       {/* İkincil içerik istatistikleri */}
       <section className="mt-6">
         <p className="mb-3 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -427,13 +430,10 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
-      {/* Birincil grafik */}
-      <VisitorChart data={stats.visitorChartData} />
-
       <PageAnalytics
         pageData={stats.pageData}
         sourceData={stats.sourceData}
-        today={dateInIstanbul()}
+        today={today}
       />
 
       <section className="mt-6 min-w-0 rounded-xl border border-border/50 bg-card p-5 sm:p-6">
@@ -539,6 +539,9 @@ export default async function AdminDashboardPage() {
 
         <VisitorChart
           data={stats.postViewChartData}
+          today={today}
+          initialRange={14}
+          totalLabel="Dönem toplamı"
           title="Günlük blog görüntülemeleri"
           description="Yazıların benzersiz görüntülenme sayısının günlere göre dağılımı"
           valueLabel="görüntüleme"

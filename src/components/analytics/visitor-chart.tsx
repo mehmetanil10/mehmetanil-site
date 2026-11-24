@@ -11,6 +11,9 @@ export type DailyVisitorPoint = {
 
 type VisitorChartProps = {
   data: DailyVisitorPoint[];
+  today: string;
+  initialRange?: ChartRange;
+  totalLabel?: string;
   title?: string;
   description?: string;
   valueLabel?: string;
@@ -19,34 +22,43 @@ type VisitorChartProps = {
 const ranges = [7, 14, 30, "all"] as const;
 type ChartRange = (typeof ranges)[number];
 
-function formatDate(date: string, withMonth = false) {
-  const [, month, day] = date.split("-");
-  return withMonth ? `${day}.${month}` : day;
-}
+const shortDate = new Intl.DateTimeFormat("tr-TR", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
+const number = new Intl.NumberFormat("tr-TR");
+const mean = new Intl.NumberFormat("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 export function VisitorChart({
   data,
+  today,
+  initialRange = 7,
+  totalLabel = "Günlük sayıların toplamı",
   title = "Günlük ziyaretçiler",
   description = "Benzersiz ziyaretçi sayısının günlere göre dağılımı",
   valueLabel = "ziyaretçi",
 }: VisitorChartProps) {
-  const [range, setRange] = useState<ChartRange>(14);
+  const [range, setRange] = useState<ChartRange>(initialRange);
   const visibleData = useMemo(
     () => (range === "all" ? data : data.slice(-range)),
     [data, range],
   );
-  const maxCount = Math.max(1, ...visibleData.map((item) => item.count));
+  const peakDay = visibleData.reduce<DailyVisitorPoint | undefined>(
+    (peak, day) => day.count > 0 && (!peak || day.count >= peak.count) ? day : peak,
+    undefined,
+  );
   const total = visibleData.reduce((sum, item) => sum + item.count, 0);
   const average = visibleData.length ? total / visibleData.length : 0;
-  const labelStep = Math.max(1, Math.ceil(visibleData.length / 8));
-  const chartMinWidth =
-    range === "all" && visibleData.length > 30
-      ? `${visibleData.length * 18}px`
-      : "100%";
+  const spansYears = visibleData[0]?.date.slice(0, 4) !== visibleData.at(-1)?.date.slice(0, 4);
+  function formatDate(date: string) {
+    const label = shortDate.format(new Date(`${date}T12:00:00Z`));
+    return spansYears ? `${label} ${date.slice(0, 4)}` : label;
+  }
 
   return (
     <section className="mt-6 min-w-0 w-full max-w-full overflow-hidden rounded-xl border border-border/50 bg-card p-5 sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <BarChart3 size={18} className="text-primary" />
@@ -60,6 +72,7 @@ export function VisitorChart({
             <button
               key={item}
               type="button"
+              aria-pressed={range === item}
               onClick={() => setRange(item)}
               className={cn(
                 "whitespace-nowrap rounded px-2.5 py-1 text-xs transition-colors",
@@ -76,55 +89,45 @@ export function VisitorChart({
 
       <div className="mt-6 grid grid-cols-2 gap-3 border-b border-border/30 pb-5 sm:flex sm:gap-8">
         <div>
-          <p className="text-2xl font-semibold">{total}</p>
-          <p className="text-xs text-muted-foreground">Dönem toplamı</p>
+          <p className="text-2xl font-semibold">{number.format(total)}</p>
+          <p className="text-xs text-muted-foreground">{totalLabel}</p>
         </div>
         <div>
-          <p className="text-2xl font-semibold">{average.toFixed(1)}</p>
+          <p className="text-2xl font-semibold">{mean.format(average)}</p>
           <p className="text-xs text-muted-foreground">Günlük ortalama</p>
         </div>
-        <div>
-          <p className="text-2xl font-semibold">
-            {maxCount === 1 && total === 0 ? 0 : maxCount}
+        <div className="col-span-2">
+          <p className="text-xl font-semibold">
+            {peakDay ? `${formatDate(peakDay.date)} · ${number.format(peakDay.count)} ${valueLabel}` : "—"}
           </p>
           <p className="text-xs text-muted-foreground">En yüksek gün</p>
         </div>
       </div>
 
-      <div className="mt-6 max-w-full overflow-x-auto overscroll-x-contain pb-2">
-        <div
-          className="flex h-64 items-end gap-1.5 sm:gap-2"
-          style={{ minWidth: chartMinWidth }}
-          role="img"
-          aria-label={`${title}: ${range === "all" ? "tüm zamanlar" : `son ${range} gün`}`}
-        >
-          {visibleData.map((item, index) => {
-            const height =
-              item.count === 0 ? 2 : Math.max(8, (item.count / maxCount) * 100);
-            const showLabel =
-              index === 0 ||
-              index === visibleData.length - 1 ||
-              index % labelStep === 0;
-
+      <div className="mt-5 max-h-96 overflow-auto pb-2 sm:max-h-none">
+        <ul aria-label={title} className="flex flex-col-reverse gap-1 sm:w-max sm:min-w-full sm:flex-row sm:gap-2">
+          {visibleData.map(({ date, count }) => {
+            const isToday = date === today;
+            const size = `${peakDay ? (count / peakDay.count) * 100 : 0}%`;
             return (
-              <div
-                key={item.date}
-                className="flex h-full min-w-0 flex-1 flex-col justify-end"
-              >
-                <div className="flex flex-1 items-end">
-                  <div
-                    className="w-full rounded-t bg-primary/70 transition-all duration-300 hover:bg-primary"
-                    style={{ height: `${height}%` }}
-                    title={`${formatDate(item.date, true)}: ${item.count} ${valueLabel}`}
-                  />
+              <li key={date} className="grid grid-cols-[6rem_minmax(0,1fr)_auto] items-center gap-3 py-1 sm:flex sm:min-w-16 sm:flex-1 sm:flex-col sm:gap-2">
+                <time dateTime={date} className={cn("text-xs sm:order-last sm:text-center", isToday ? "font-semibold text-primary" : "text-muted-foreground")}>
+                  {formatDate(date)}
+                  {isToday && <span className="ml-1 sm:ml-0 sm:block">Bugün</span>}
+                </time>
+                <div aria-hidden="true" className="h-2 overflow-hidden rounded bg-muted sm:hidden">
+                  <div className={cn("h-full rounded", isToday ? "bg-primary" : "bg-primary/70")} style={{ width: size }} />
                 </div>
-                <span className="mt-2 h-4 text-center text-[10px] text-muted-foreground">
-                  {showLabel ? formatDate(item.date, visibleData.length > 14) : ""}
-                </span>
-              </div>
+                <div className="text-right sm:relative sm:mt-6 sm:h-36 sm:w-full sm:max-w-12">
+                  <span className="text-sm font-semibold tabular-nums sm:absolute sm:left-1/2 sm:mb-1 sm:-translate-x-1/2" style={{ bottom: size }}>
+                    {number.format(count)}<span className="sr-only"> {valueLabel}</span>
+                  </span>
+                  <div aria-hidden="true" className={cn("absolute inset-x-0 bottom-0 hidden rounded-t sm:block", isToday ? "bg-primary" : "bg-primary/70")} style={{ height: size }} />
+                </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </section>
   );
